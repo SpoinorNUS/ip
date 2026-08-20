@@ -3,9 +3,19 @@ import java.util.Scanner;
 public class Turtley {
 
     private static final String SEPARATOR = "____________________________________________________________";
+    private static final String[] taskList = new String[100];
+    private static int numOfTasks = 0;
 
     //Line 7-12 was written by ChatGPT
     public static void add(String input) {
+        if (numOfTasks >= 100) {
+            System.out.println(SEPARATOR);
+            System.out.println("Task list full, do some work you lazy bum!");
+            System.out.println(SEPARATOR);
+            return;
+        }
+        taskList[numOfTasks] = input;
+        numOfTasks++;
         System.out.println(SEPARATOR);
         System.out.println("added: " + input);
         System.out.println(SEPARATOR);
