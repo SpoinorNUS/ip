@@ -4,8 +4,7 @@ public class Turtley {
 
     private static final String SEPARATOR = "____________________________________________________________";
     private static final int MAX_TASK_NUM = 100;
-    private static final String[] taskList = new String[MAX_TASK_NUM];
-    private static final boolean[] completedTasks = new boolean[MAX_TASK_NUM];
+    private static final Task[] taskList = new Task[MAX_TASK_NUM];
     private static int numOfTasks = 0;
 
     //When user inputs any non-commands, add the exact words as a task to task list
@@ -16,8 +15,7 @@ public class Turtley {
             System.out.println(SEPARATOR);
             return;
         }
-        taskList[numOfTasks] = input;
-        completedTasks[numOfTasks] = false;
+        taskList[numOfTasks] = new Task(input);
         numOfTasks++;
         System.out.println(SEPARATOR);
         System.out.println("added: " + input);
@@ -40,8 +38,8 @@ public class Turtley {
             if (i >= numOfTasks) {
                 break;
             }
-            String status = completedTasks[i] ? "[X]" : "[ ]";
-            System.out.println(" " + (i + 1) + "." + status + " " + taskList[i]);
+            System.out.println(" " + (i + 1) + ".[" + taskList[i].getStatusIcon() + "] "
+                    + taskList[i].getDescription());
         }
         System.out.println(SEPARATOR);
     }
@@ -57,10 +55,11 @@ public class Turtley {
                 return;
             }
 
-            completedTasks[taskIndex] = true;
+            taskList[taskIndex].markAsDone();
             System.out.println(SEPARATOR);
             System.out.println(" Nice! I've marked this task as done:");
-            System.out.println("   [X] " + taskList[taskIndex]);
+            System.out.println("   [" + taskList[taskIndex].getStatusIcon() + "] "
+                    + taskList[taskIndex].getDescription());
             System.out.println(SEPARATOR);
         } catch (NumberFormatException exception) {
             System.out.println(SEPARATOR);
@@ -80,10 +79,11 @@ public class Turtley {
                 return;
             }
 
-            completedTasks[taskIndex] = false;
+            taskList[taskIndex].markAsNotDone();
             System.out.println(SEPARATOR);
             System.out.println(" OK, I've marked this task as not done yet:");
-            System.out.println("   [ ] " + taskList[taskIndex]);
+            System.out.println("   [" + taskList[taskIndex].getStatusIcon() + "] "
+                    + taskList[taskIndex].getDescription());
             System.out.println(SEPARATOR);
         } catch (NumberFormatException exception) {
             System.out.println(SEPARATOR);
@@ -136,7 +136,7 @@ public class Turtley {
         //Line 11-17 was written by ChatGPT.
         System.out.println(SEPARATOR);
         System.out.println(banner);
-        System.out.println("Hello! I'm Turtley. o/T\\>");
+        System.out.println("Hello! I'm Turtley.");
         System.out.println("What can I do for you? o/T\\>");
         System.out.println(SEPARATOR);
 
