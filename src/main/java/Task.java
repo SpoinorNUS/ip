@@ -4,6 +4,7 @@
  */
 public class Task {
 
+    protected String taskType;
     protected String description;
     protected boolean isDone;
 
@@ -12,7 +13,8 @@ public class Task {
      *
      * @param description the task description
      */
-    public Task(String description) {
+    public Task(String taskType, String description) {
+        this.taskType = taskType;
         this.description = description;
         this.isDone = false;
     }
@@ -56,6 +58,6 @@ public class Task {
      */
     @Override
     public String toString() {
-        return "[" + getStatusIcon() + "] " + description;
+        return "[" + taskType + "]" + "[" + getStatusIcon() + "] " + description;
     }
 }

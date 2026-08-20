@@ -15,10 +15,13 @@ public class Turtley {
             System.out.println(SEPARATOR);
             return;
         }
-        taskList[numOfTasks] = new Task(input);
+        Task newTask = new Task(taskType, input);
+        taskList[numOfTasks] = newTask;
         numOfTasks++;
         System.out.println(SEPARATOR);
-        System.out.println("added: " + input);
+        System.out.println("Got it. I've added this task:");
+        System.out.println("  " + newTask);
+        System.out.println("Now you have " + numOfTasks + " tasks in the list.");
         System.out.println(SEPARATOR);
     }
 
@@ -38,8 +41,7 @@ public class Turtley {
             if (i >= numOfTasks) {
                 break;
             }
-            System.out.println(" " + (i + 1) + ".[" + taskList[i].getStatusIcon() + "] "
-                    + taskList[i].getDescription());
+            System.out.println(" " + (i + 1) + "." + taskList[i]);
         }
         System.out.println(SEPARATOR);
     }
@@ -118,11 +120,11 @@ public class Turtley {
                 } else if (input.startsWith("unmark ")) { //(Written by ChatGPT)
                     unmark(input.substring(7).trim());
                 } else if (input.startsWith("todo ")) {
-                    add("todo",input.substring(5).trim());
+                    add("T",input.substring(5).trim());
                 } else if (input.startsWith("deadline ")) {
-                    add("deadline",input.substring(9).trim());
+                    add("D",input.substring(9).trim());
                 } else if (input.startsWith("event ")) {
-                    add("event",input.substring(6).trim());
+                    add("E",input.substring(6).trim());
                 } else {
                     System.out.println("Please input something correct. o/T\\>");
                     System.out.println(SEPARATOR);
