@@ -8,10 +8,10 @@ public class Turtley {
     private static int numOfTasks = 0;
 
     //When user inputs any non-commands, add the exact words as a task to task list
-    public static void add(String input) {
+    public static void add(String taskType,String input) {
         if (numOfTasks >= MAX_TASK_NUM) {
             System.out.println(SEPARATOR);
-            System.out.println("Task list full, do some work you lazy bum!");
+            System.out.println("Task list full, do some work you lazy bum! o/T\\>");
             System.out.println(SEPARATOR);
             return;
         }
@@ -117,8 +117,15 @@ public class Turtley {
                     mark(input.substring(5).trim());
                 } else if (input.startsWith("unmark ")) { //(Written by ChatGPT)
                     unmark(input.substring(7).trim());
+                } else if (input.startsWith("todo ")) {
+                    add("todo",input.substring(5).trim());
+                } else if (input.startsWith("deadline ")) {
+                    add("deadline",input.substring(9).trim());
+                } else if (input.startsWith("event ")) {
+                    add("event",input.substring(6).trim());
                 } else {
-                    add(input);
+                    System.out.println("Please input something correct. o/T\\>");
+                    System.out.println(SEPARATOR);
                 }
                 return true;
             }
@@ -150,5 +157,7 @@ public class Turtley {
         while (running) {
             running = prompt(keyboard);
         }
+        //Close the Scanner once done
+        keyboard.close();
     }
 }
