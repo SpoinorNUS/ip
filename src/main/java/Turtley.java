@@ -27,7 +27,11 @@ public class Turtley {
     //Retains the earlier task creation interface for ordinary task types.
     public static void add(String taskType, String input) {
         if ("T".equals(taskType)) {
-            add(new ToDo(input));
+            try {
+                add(new ToDo(input));
+            } catch (TurtleyException exception) {
+                showError(exception);
+            }
         } else {
             add(new Task(taskType, input));
         }
@@ -71,8 +75,13 @@ public class Turtley {
 
     //Prints a helpful message when a structured task command is malformed.(Written by ChatGPT)
     private static void showInvalidTaskFormat(String format) {
+        showError(new TurtleyException("Invalid format. Use: " + format));
+    }
+
+    //Prints a user-facing error while keeping the Turtley prompt suffix consistent.
+    private static void showError(TurtleyException exception) {
         System.out.println(SEPARATOR);
-        System.out.println(" Invalid format. Use: " + format);
+        System.out.println(" " + exception.getMessage() + " o/T\\>");
         System.out.println(SEPARATOR);
     }
 
@@ -100,12 +109,9 @@ public class Turtley {
     //Marks the task at the given one-based list index as done. (Written by ChatGPT)
     public static void mark(String input) {
         try {
-            int taskIndex = Integer.parseInt(input) - 1;
+            int taskIndex = parseTaskIndex(input);
             if (taskIndex < 0 || taskIndex >= numOfTasks) {
-                System.out.println(SEPARATOR);
-                System.out.println(" Task number is not in your list.");
-                System.out.println(SEPARATOR);
-                return;
+                throw new TurtleyException("Task number is not in your list.");
             }
 
             taskList[taskIndex].markAsDone();
@@ -114,22 +120,17 @@ public class Turtley {
             System.out.println("   [" + taskList[taskIndex].getStatusIcon() + "] "
                     + taskList[taskIndex].getDescription());
             System.out.println(SEPARATOR);
-        } catch (NumberFormatException exception) {
-            System.out.println(SEPARATOR);
-            System.out.println(" Please provide a valid task number.");
-            System.out.println(SEPARATOR);
+        } catch (TurtleyException exception) {
+            showError(exception);
         }
     }
 
     //Marks the task at the given one-based list index as not done. (Written by ChatGPT)
     public static void unmark(String input) {
         try {
-            int taskIndex = Integer.parseInt(input) - 1;
+            int taskIndex = parseTaskIndex(input);
             if (taskIndex < 0 || taskIndex >= numOfTasks) {
-                System.out.println(SEPARATOR);
-                System.out.println(" Task number is not in your list.");
-                System.out.println(SEPARATOR);
-                return;
+                throw new TurtleyException("Task number is not in your list.");
             }
 
             taskList[taskIndex].markAsNotDone();
@@ -138,11 +139,49 @@ public class Turtley {
             System.out.println("   [" + taskList[taskIndex].getStatusIcon() + "] "
                     + taskList[taskIndex].getDescription());
             System.out.println(SEPARATOR);
-        } catch (NumberFormatException exception) {
-            System.out.println(SEPARATOR);
-            System.out.println(" Please provide a valid task number.");
-            System.out.println(SEPARATOR);
+        } catch (TurtleyException exception) {
+            showError(exception);
         }
+    }
+
+    /**
+     * Parses a one-based task number into the zero-based index used internally.
+     *
+     * @param input the task number entered by the user
+     * @return the corresponding zero-based task index
+     * @throws TurtleyException if the input is not a valid integer
+     */
+    private static int parseTaskIndex(String input) {
+        if (input == null || input.isEmpty()) {
+            throw new TurtleyException("Please provide a valid task number.");
+        }
+
+        int sign = 1;
+        int digitStart = 0;
+        char firstCharacter = input.charAt(0);
+        if (firstCharacter == '-' || firstCharacter == '+') {
+            sign = firstCharacter == '-' ? -1 : 1;
+            digitStart = 1;
+        }
+        if (digitStart == input.length()) {
+            throw new TurtleyException("Please provide a valid task number.");
+        }
+
+        long maximumAbsoluteValue = sign < 0 ? 2_147_483_648L : Integer.MAX_VALUE;
+        long absoluteValue = 0;
+        for (int i = digitStart; i < input.length(); i++) {
+            char currentCharacter = input.charAt(i);
+            if (currentCharacter < '0' || currentCharacter > '9') {
+                throw new TurtleyException("Please provide a valid task number.");
+            }
+            int digit = currentCharacter - '0';
+            if (absoluteValue > (maximumAbsoluteValue - digit) / 10) {
+                throw new TurtleyException("Please provide a valid task number.");
+            }
+            absoluteValue = absoluteValue * 10 + digit;
+        }
+
+        return (int) (sign * absoluteValue) - 1;
     }
 
     //Terminates the app
@@ -170,8 +209,9 @@ public class Turtley {
                     mark(input.substring(5).trim());
                 } else if (input.startsWith("unmark ")) { //(Written by ChatGPT)
                     unmark(input.substring(7).trim());
-                } else if (input.startsWith("todo ")) {
-                    add("T",input.substring(5).trim());
+                } else if (input.equals("todo") || input.startsWith("todo ")) {
+                    String description = input.length() == 4 ? "" : input.substring(5).trim();
+                    add("T", description);
                 } else if (input.startsWith("deadline ")) {
                     addDeadline(input.substring(9).trim());
                 } else if (input.startsWith("event ")) {

@@ -72,7 +72,98 @@ The executable expected-output list is kept below so the `test-ui` skill can run
         "Got it. I've added this task:\n  [E][ ] project meeting (from: Mon 2pm to: 4pm)\nNow you have 7 tasks in the list.",
         "Bye. See you around!"
       ]
+    },
+    {
+      "name": "To-do without a name",
+      "aim": "Verify that missing to-do names are rejected without adding empty tasks.",
+      "inputs": [
+        "todo",
+        "list",
+        "bye"
+      ],
+      "expected_outputs": [
+        "Invalid format. Use: todo <description> o/T\\>",
+        "Task list empty. Good job! Here's a cookie. o/T\\>",
+        "Bye. See you around!"
+      ]
+    },
+    {
+      "name": "Error messages",
+      "aim": "Verify that invalid commands, task numbers, and structured task formats use the custom Turtley error message suffix.",
+      "inputs": [
+        "deadline /by tomorrow",
+        "event /from 2pm /to 3pm",
+        "mark nope",
+        "unmark nope",
+        "mark 1",
+        "unmark 1",
+        "",
+        "unknown command",
+        "bye"
+      ],
+      "expected_outputs": [
+        "Invalid format. Use: deadline <description> /by <date> o/T\\>",
+        "Invalid format. Use: event <description> /from <start> /to <end> o/T\\>",
+        "Please provide a valid task number. o/T\\>",
+        "Please provide a valid task number. o/T\\>",
+        "Task number is not in your list. o/T\\>",
+        "Task number is not in your list. o/T\\>",
+        "Please input something. o/T\\>",
+        "Please input something correct. o/T\\>",
+        "Bye. See you around!"
+      ]
     }
   ]
 }
+```
+
+## Test case 2: To-do without a name
+
+Aim: Verify that a to-do command without a name is rejected without adding an empty task.
+
+Inputs:
+
+```text
+todo
+list
+bye
+```
+
+Expected output:
+
+```text
+Invalid format. Use: todo <description> o/T\>
+Task list empty. Good job! Here's a cookie. o/T\>
+```
+
+## Test case 3: Error messages
+
+Aim: Verify that invalid commands, task numbers, and structured task formats use the custom Turtley error message suffix.
+
+Inputs:
+
+```text
+deadline /by tomorrow
+event /from 2pm /to 3pm
+mark nope
+unmark nope
+mark 1
+unmark 1
+
+unknown command
+bye
+```
+
+Expected output:
+
+```text
+Invalid format. Use: deadline <description> /by <date> o/T\>
+Invalid format. Use: event <description> /from <start> /to <end> o/T\>
+Please provide a valid task number. o/T\>
+Please provide a valid task number. o/T\>
+Task number is not in your list. o/T\>
+Task number is not in your list. o/T\>
+Please input something. o/T\>
+Please input something correct. o/T\>
+Bye. See you around!
 ```
