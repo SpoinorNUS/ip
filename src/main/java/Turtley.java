@@ -3,13 +3,13 @@ import java.util.Scanner;
 public class Turtley {
 
     private static final String SEPARATOR = "____________________________________________________________";
-    private static final String[] taskList = new String[100];
+    private static final int MAX_TASK_NUM = 100;
+    private static final String[] taskList = new String[MAX_TASK_NUM];
     private static int numOfTasks = 0;
 
-    //Line 7-16(minus 13-15) was written by ChatGPT
-    //When user inputs any non-commands, add the exact words as a task to tasklist
+    //When user inputs any non-commands, add the exact words as a task to task list
     public static void add(String input) {
-        if (numOfTasks >= 100) {
+        if (numOfTasks >= MAX_TASK_NUM) {
             System.out.println(SEPARATOR);
             System.out.println("Task list full, do some work you lazy bum!");
             System.out.println(SEPARATOR);
@@ -33,8 +33,8 @@ public class Turtley {
 
         //Print out list display
         System.out.println(SEPARATOR);
-        for (int i = 0; i < 100; i++) {
-            if (taskList[i] == null) {
+        for (int i = 0; i < taskList.length; i++) {
+            if (i >= numOfTasks) {
                 break;
             }
             System.out.println((i+1)+". " + taskList[i]);
@@ -57,6 +57,7 @@ public class Turtley {
         }
         String input = keyboard.nextLine();
         switch (input) {
+            case "" -> {System.out.println("Please input something."); return true;}
             case "bye" -> {bye(); return false;}
             case "list" -> {list(); return true;}
             default -> {add(input); return true;}
