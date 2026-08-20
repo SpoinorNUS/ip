@@ -1,26 +1,25 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Turtley {
 
     private static final String SEPARATOR = "____________________________________________________________";
     private static final int MAX_TASK_NUM = 100;
-    private static final Task[] taskList = new Task[MAX_TASK_NUM];
-    private static int numOfTasks = 0;
+    private static final ArrayList<Task> taskList = new ArrayList<>();
 
     //Adds a task object to the task list.
     public static void add(Task newTask) {
-        if (numOfTasks >= MAX_TASK_NUM) {
+        if (taskList.size() >= MAX_TASK_NUM) {
             System.out.println(SEPARATOR);
             System.out.println("Task list full, do some work you lazy bum! o/T\\>");
             System.out.println(SEPARATOR);
             return;
         }
-        taskList[numOfTasks] = newTask;
-        numOfTasks++;
+        taskList.add(newTask);
         System.out.println(SEPARATOR);
         System.out.println("Got it. I've added this task:");
         System.out.println("  " + newTask);
-        System.out.println("Now you have " + numOfTasks + " tasks in the list.");
+        System.out.println("Now you have " + taskList.size() + " tasks in the list.");
         System.out.println(SEPARATOR);
     }
 
@@ -87,7 +86,7 @@ public class Turtley {
 
     //Reads from the taskList
     public static void list() {
-        if (numOfTasks <= 0) {
+        if (taskList.isEmpty()) {
             System.out.println(SEPARATOR);
             System.out.println("Task list empty. Good job! Here's a cookie. o/T\\>");
             System.out.println(SEPARATOR);
@@ -97,11 +96,8 @@ public class Turtley {
         //Print out list display
         System.out.println(SEPARATOR);
         System.out.println(" Here are the tasks in your list:");
-        for (int i = 0; i < taskList.length; i++) {
-            if (i >= numOfTasks) {
-                break;
-            }
-            System.out.println(" " + (i + 1) + "." + taskList[i]);
+        for (int i = 0; i < taskList.size(); i++) {
+            System.out.println(" " + (i + 1) + "." + taskList.get(i));
         }
         System.out.println(SEPARATOR);
     }
@@ -110,15 +106,15 @@ public class Turtley {
     public static void mark(String input) {
         try {
             int taskIndex = parseTaskIndex(input);
-            if (taskIndex < 0 || taskIndex >= numOfTasks) {
+            if (taskIndex < 0 || taskIndex >= taskList.size()) {
                 throw new TurtleyException("Task number is not in your list.");
             }
 
-            taskList[taskIndex].markAsDone();
+            taskList.get(taskIndex).markAsDone();
             System.out.println(SEPARATOR);
             System.out.println(" Nice! I've marked this task as done:");
-            System.out.println("   [" + taskList[taskIndex].getStatusIcon() + "] "
-                    + taskList[taskIndex].getDescription());
+            System.out.println("   [" + taskList.get(taskIndex).getStatusIcon() + "] "
+                    + taskList.get(taskIndex).getDescription());
             System.out.println(SEPARATOR);
         } catch (TurtleyException exception) {
             showError(exception);
@@ -129,15 +125,15 @@ public class Turtley {
     public static void unmark(String input) {
         try {
             int taskIndex = parseTaskIndex(input);
-            if (taskIndex < 0 || taskIndex >= numOfTasks) {
+            if (taskIndex < 0 || taskIndex >= taskList.size()) {
                 throw new TurtleyException("Task number is not in your list.");
             }
 
-            taskList[taskIndex].markAsNotDone();
+            taskList.get(taskIndex).markAsNotDone();
             System.out.println(SEPARATOR);
             System.out.println(" OK, I've marked this task as not done yet:");
-            System.out.println("   [" + taskList[taskIndex].getStatusIcon() + "] "
-                    + taskList[taskIndex].getDescription());
+            System.out.println("   [" + taskList.get(taskIndex).getStatusIcon() + "] "
+                    + taskList.get(taskIndex).getDescription());
             System.out.println(SEPARATOR);
         } catch (TurtleyException exception) {
             showError(exception);
