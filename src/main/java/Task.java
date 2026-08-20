@@ -1,22 +1,44 @@
 /**
- * Represents a task in Turtley's task list.
- * (All written by ChatGPT)
+ * Represents a general task in Turtley's task list.
  */
 public class Task {
 
-    protected String taskType;
     protected String description;
     protected boolean isDone;
+    private final String taskType;
 
     /**
      * Creates an unfinished task with the given description.
      *
      * @param description the task description
      */
+    public Task(String description) {
+        this("T", description);
+    }
+
+    /**
+     * Creates a task with a caller-supplied type icon.
+     *
+     * <p>This constructor is retained for compatibility with the earlier
+     * two-argument task creation code. New specialized tasks should use
+     * {@link Deadline} or {@link Event} instead.</p>
+     *
+     * @param taskType the type icon to display
+     * @param description the task description
+     */
     public Task(String taskType, String description) {
         this.taskType = taskType;
         this.description = description;
         this.isDone = false;
+    }
+
+    /**
+     * Returns this task's type icon.
+     *
+     * @return the task type icon
+     */
+    public String getTypeIcon() {
+        return taskType;
     }
 
     /**
@@ -54,10 +76,10 @@ public class Task {
     /**
      * Returns the display form of this task.
      *
-     * @return the status icon followed by the task description
+     * @return the type icon, status icon, and description
      */
     @Override
     public String toString() {
-        return "[" + taskType + "]" + "[" + getStatusIcon() + "] " + description;
+        return "[" + getTypeIcon() + "][" + getStatusIcon() + "] " + description;
     }
 }

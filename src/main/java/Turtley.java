@@ -7,21 +7,72 @@ public class Turtley {
     private static final Task[] taskList = new Task[MAX_TASK_NUM];
     private static int numOfTasks = 0;
 
-    //When user inputs any non-commands, add the exact words as a task to task list
-    public static void add(String taskType,String input) {
+    //Adds a task object to the task list.
+    public static void add(Task newTask) {
         if (numOfTasks >= MAX_TASK_NUM) {
             System.out.println(SEPARATOR);
             System.out.println("Task list full, do some work you lazy bum! o/T\\>");
             System.out.println(SEPARATOR);
             return;
         }
-        Task newTask = new Task(taskType, input);
         taskList[numOfTasks] = newTask;
         numOfTasks++;
         System.out.println(SEPARATOR);
         System.out.println("Got it. I've added this task:");
         System.out.println("  " + newTask);
         System.out.println("Now you have " + numOfTasks + " tasks in the list.");
+        System.out.println(SEPARATOR);
+    }
+
+    //Retains the earlier task creation interface for ordinary task types.
+    public static void add(String taskType, String input) {
+        if ("T".equals(taskType)) {
+            add(new ToDo(input));
+        } else {
+            add(new Task(taskType, input));
+        }
+    }
+
+    //Parses and adds a deadline command's description and /by field. (Written by ChatGPT)
+    private static void addDeadline(String input) {
+        int byIndex = input.indexOf(" /by ");
+        if (byIndex <= 0 || byIndex + 5 >= input.length()) {
+            showInvalidTaskFormat("deadline <description> /by <date>");
+            return;
+        }
+
+        String description = input.substring(0, byIndex).trim();
+        String by = input.substring(byIndex + 5).trim();
+        if (description.isEmpty() || by.isEmpty()) {
+            showInvalidTaskFormat("deadline <description> /by <date>");
+            return;
+        }
+        add(new Deadline(description, by));
+    }
+
+    //Parses and adds an event command's description, /from field, and /to field. (Written by ChatGPT)
+    private static void addEvent(String input) {
+        int fromIndex = input.indexOf(" /from ");
+        int toIndex = fromIndex < 0 ? -1 : input.indexOf(" /to ", fromIndex + 6);
+        if (fromIndex <= 0 || toIndex <= fromIndex + 6 || toIndex + 5 >= input.length()) {
+            showInvalidTaskFormat("event <description> /from <start> /to <end>");
+            return;
+        }
+
+        String description = input.substring(0, fromIndex).trim();
+        String from = input.substring(fromIndex + 6, toIndex).trim();
+        String to = input.substring(toIndex + 5).trim();
+        if (description.isEmpty() || from.isEmpty() || to.isEmpty()) {
+            showInvalidTaskFormat("event <description> /from <start> /to <end>");
+            return;
+        }
+        add(new Event(description, from, to));
+    }
+
+    //Prints a helpful message when a structured task command is malformed.(Written by ChatGPT)
+    private static void showInvalidTaskFormat(String format) {
+        System.out.println(SEPARATOR);
+        System.out.println(" Invalid format. Use: " + format);
         System.out.println(SEPARATOR);
     }
 
@@ -122,9 +173,9 @@ public class Turtley {
                 } else if (input.startsWith("todo ")) {
                     add("T",input.substring(5).trim());
                 } else if (input.startsWith("deadline ")) {
-                    add("D",input.substring(9).trim());
+                    addDeadline(input.substring(9).trim());
                 } else if (input.startsWith("event ")) {
-                    add("E",input.substring(6).trim());
+                    addEvent(input.substring(6).trim());
                 } else {
                     System.out.println("Please input something correct. o/T\\>");
                     System.out.println(SEPARATOR);
