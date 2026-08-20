@@ -28,7 +28,7 @@ public class Turtley {
     public static void list() {
         if (numOfTasks <= 0) {
             System.out.println(SEPARATOR);
-            System.out.println("Task list empty. Good job! Here's a cookie.");
+            System.out.println("Task list empty. Good job! Here's a cookie. o/T\\>");
             System.out.println(SEPARATOR);
             return;
         }
@@ -69,10 +69,33 @@ public class Turtley {
         }
     }
 
+    //Marks the task at the given one-based list index as not done. (Written by ChatGPT)
+    public static void unmark(String input) {
+        try {
+            int taskIndex = Integer.parseInt(input) - 1;
+            if (taskIndex < 0 || taskIndex >= numOfTasks) {
+                System.out.println(SEPARATOR);
+                System.out.println(" Task number is not in your list.");
+                System.out.println(SEPARATOR);
+                return;
+            }
+
+            completedTasks[taskIndex] = false;
+            System.out.println(SEPARATOR);
+            System.out.println(" OK, I've marked this task as not done yet:");
+            System.out.println("   [ ] " + taskList[taskIndex]);
+            System.out.println(SEPARATOR);
+        } catch (NumberFormatException exception) {
+            System.out.println(SEPARATOR);
+            System.out.println(" Please provide a valid task number.");
+            System.out.println(SEPARATOR);
+        }
+    }
+
     //Terminates the app
     public static void bye() {
         System.out.println(SEPARATOR);
-        System.out.println("Bye. See you around!");
+        System.out.println("Bye. See you around! o/T\\>");
         System.out.println(SEPARATOR);
     }
 
@@ -84,12 +107,16 @@ public class Turtley {
         }
         String input = keyboard.nextLine();
         switch (input) {
-            case "" -> {System.out.println("Please input something."); return true;}
+            case "" -> {System.out.println("Please input something. o/T\\>");
+                        System.out.println(SEPARATOR);
+                        return true;}
             case "bye" -> {bye(); return false;}
             case "list" -> {list(); return true;}
             default -> {
                 if (input.startsWith("mark ")) { //(Written by ChatGPT)
                     mark(input.substring(5).trim());
+                } else if (input.startsWith("unmark ")) { //(Written by ChatGPT)
+                    unmark(input.substring(7).trim());
                 } else {
                     add(input);
                 }
@@ -109,8 +136,8 @@ public class Turtley {
         //Line 11-17 was written by ChatGPT.
         System.out.println(SEPARATOR);
         System.out.println(banner);
-        System.out.println("Hello! I'm Turtley.");
-        System.out.println("What can I do for you?");
+        System.out.println("Hello! I'm Turtley. o/T\\>");
+        System.out.println("What can I do for you? o/T\\>");
         System.out.println(SEPARATOR);
 
         //running variable is true when the application is running
