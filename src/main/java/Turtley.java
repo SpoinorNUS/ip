@@ -6,7 +6,8 @@ public class Turtley {
     private static final String[] taskList = new String[100];
     private static int numOfTasks = 0;
 
-    //Line 7-12 was written by ChatGPT
+    //Line 7-16(minus 13-15) was written by ChatGPT
+    //When user inputs any non-commands, add the exact words as a task to tasklist
     public static void add(String input) {
         if (numOfTasks >= 100) {
             System.out.println(SEPARATOR);
@@ -21,25 +22,45 @@ public class Turtley {
         System.out.println(SEPARATOR);
     }
 
+    //Reads from the taskList
+    public static void list() {
+        if (numOfTasks <= 0) {
+            System.out.println(SEPARATOR);
+            System.out.println("Task list empty. Good job! Here's a cookie.");
+            System.out.println(SEPARATOR);
+            return;
+        }
+
+        //Print out list display
+        System.out.println(SEPARATOR);
+        for (int i = 0; i < 100; i++) {
+            if (taskList[i] == null) {
+                break;
+            }
+            System.out.println((i+1)+". " + taskList[i]);
+        }
+        System.out.println(SEPARATOR);
+    }
+
+    //Terminates the app
     public static void bye() {
         System.out.println(SEPARATOR);
         System.out.println("Bye. See you around!");
         System.out.println(SEPARATOR);
     }
 
+    //Waits for input from the user
     public static boolean prompt(Scanner keyboard) {
         //Line 21-24 written by ChatGPT (I genuinely think this is unnecessary though)
         if (!keyboard.hasNextLine()) {
             return false;
         }
         String input = keyboard.nextLine();
-        //Line 22-27 was written by ChatGPT
-        if (input.equals("bye")) {
-            bye();
-            return false;
+        switch (input) {
+            case "bye" -> {bye(); return false;}
+            case "list" -> {list(); return true;}
+            default -> {add(input); return true;}
         }
-        add(input);
-        return true;
     }
 
     public static void main(String[] args) {
