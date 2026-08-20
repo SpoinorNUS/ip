@@ -5,9 +5,9 @@ public class Turtley {
     private static final String SEPARATOR = "____________________________________________________________";
 
     //Line 7-12 was written by ChatGPT
-    public static void echo(String input) {
+    public static void add(String input) {
         System.out.println(SEPARATOR);
-        System.out.println(input);
+        System.out.println("added: " + input);
         System.out.println(SEPARATOR);
     }
 
@@ -28,7 +28,7 @@ public class Turtley {
             bye();
             return false;
         }
-        echo(input);
+        add(input);
         return true;
     }
 
