@@ -141,6 +141,29 @@ public class Turtley {
     }
 
     /**
+     * Deletes the task at the given one-based list index.
+     *
+     * @param input the task number entered by the user
+     */ //(Written by ChatGPT)
+    public static void delete(String input) {
+        try {
+            int taskIndex = parseTaskIndex(input);
+            if (taskIndex < 0 || taskIndex >= taskList.size()) {
+                throw new TurtleyException("Task number is not in your list.");
+            }
+
+            Task deletedTask = taskList.remove(taskIndex);
+            System.out.println(SEPARATOR);
+            System.out.println(" Noted. I've removed this task:");
+            System.out.println("   " + deletedTask);
+            System.out.println(" Now you have " + taskList.size() + " tasks in the list.");
+            System.out.println(SEPARATOR);
+        } catch (TurtleyException exception) {
+            showError(exception);
+        }
+    }
+
+    /**
      * Parses a one-based task number into the zero-based index used internally.
      *
      * @param input the task number entered by the user
@@ -205,6 +228,8 @@ public class Turtley {
                     mark(input.substring(5).trim());
                 } else if (input.startsWith("unmark ")) { //(Written by ChatGPT)
                     unmark(input.substring(7).trim());
+                } else if (input.equals("delete") || input.startsWith("delete ")) {
+                    delete(input.length() == 6 ? "" : input.substring(7).trim());
                 } else if (input.equals("todo") || input.startsWith("todo ")) {
                     String description = input.length() == 4 ? "" : input.substring(5).trim();
                     add("T", description);

@@ -112,6 +112,36 @@ The executable expected-output list is kept below so the `test-ui` skill can run
         "Please input something correct. o/T\\>",
         "Bye. See you around!"
       ]
+    },
+    {
+      "name": "Delete task workflow",
+      "aim": "Verify that a task can be deleted by its one-based number, that its details are shown, that the count decreases, and that later tasks are renumbered.",
+      "inputs": [
+        "todo read book",
+        "deadline return book /by June 6th",
+        "event project meeting /from Aug 6th 2pm /to 4pm",
+        "todo join sports club",
+        "todo borrow book",
+        "mark 1",
+        "mark 2",
+        "list",
+        "delete 3",
+        "list",
+        "bye"
+      ],
+      "expected_outputs": [
+        "Got it. I've added this task:\n  [T][ ] read book\nNow you have 1 tasks in the list.",
+        "Got it. I've added this task:\n  [D][ ] return book (by: June 6th)\nNow you have 2 tasks in the list.",
+        "Got it. I've added this task:\n  [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)\nNow you have 3 tasks in the list.",
+        "Got it. I've added this task:\n  [T][ ] join sports club\nNow you have 4 tasks in the list.",
+        "Got it. I've added this task:\n  [T][ ] borrow book\nNow you have 5 tasks in the list.",
+        "Nice! I've marked this task as done:\n   [X] read book",
+        "Nice! I've marked this task as done:\n   [X] return book",
+        "Here are the tasks in your list:\n 1.[T][X] read book\n 2.[D][X] return book (by: June 6th)\n 3.[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)\n 4.[T][ ] join sports club\n 5.[T][ ] borrow book",
+        "Noted. I've removed this task:\n   [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)\n Now you have 4 tasks in the list.",
+        "Here are the tasks in your list:\n 1.[T][X] read book\n 2.[D][X] return book (by: June 6th)\n 3.[T][ ] join sports club\n 4.[T][ ] borrow book",
+        "Bye. See you around!"
+      ]
     }
   ]
 }
@@ -166,4 +196,42 @@ Task number is not in your list. o/T\>
 Please input something. o/T\>
 Please input something correct. o/T\>
 Bye. See you around!
+```
+
+## Test case 4: Delete task workflow
+
+Aim: Verify that a task is deleted by its one-based number, its details and updated task count are shown, and later tasks are renumbered.
+
+Inputs:
+
+```text
+todo read book
+deadline return book /by June 6th
+event project meeting /from Aug 6th 2pm /to 4pm
+todo join sports club
+todo borrow book
+mark 1
+mark 2
+list
+delete 3
+list
+bye
+```
+
+Expected output for the relevant commands:
+
+```text
+ Here are the tasks in your list:
+ 1.[T][X] read book
+ 2.[D][X] return book (by: June 6th)
+ 3.[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+ 4.[T][ ] join sports club
+ 5.[T][ ] borrow book
+ Noted. I've removed this task:
+   [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+ Now you have 4 tasks in the list.
+ 1.[T][X] read book
+ 2.[D][X] return book (by: June 6th)
+ 3.[T][ ] join sports club
+ 4.[T][ ] borrow book
 ```
