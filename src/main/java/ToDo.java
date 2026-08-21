@@ -9,7 +9,7 @@ public class ToDo extends Task {
      * @param description the task description
      */
     public ToDo(String description) {
-        super(requireDescription(description));
+        super(TaskType.TODO, requireDescription(description));
     }
 
     /**

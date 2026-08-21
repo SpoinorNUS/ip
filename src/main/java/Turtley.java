@@ -23,9 +23,9 @@ public class Turtley {
         System.out.println(SEPARATOR);
     }
 
-    //Retains the earlier task creation interface for ordinary task types.
-    public static void add(String taskType, String input) {
-        if ("T".equals(taskType)) {
+    //Adds a task using its enum-based type.
+    public static void add(TaskType taskType, String input) {
+        if (taskType == TaskType.TODO) {
             try {
                 add(new ToDo(input));
             } catch (TurtleyException exception) {
@@ -232,7 +232,7 @@ public class Turtley {
                     delete(input.length() == 6 ? "" : input.substring(7).trim());
                 } else if (input.equals("todo") || input.startsWith("todo ")) {
                     String description = input.length() == 4 ? "" : input.substring(5).trim();
-                    add("T", description);
+                    add(TaskType.TODO, description);
                 } else if (input.startsWith("deadline ")) {
                     addDeadline(input.substring(9).trim());
                 } else if (input.startsWith("event ")) {

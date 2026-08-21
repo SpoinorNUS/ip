@@ -5,7 +5,7 @@ public class Task {
 
     protected String description;
     protected boolean isDone;
-    private final String taskType;
+    private final TaskType taskType;
 
     /**
      * Creates an unfinished task with the given description.
@@ -13,23 +13,28 @@ public class Task {
      * @param description the task description
      */
     public Task(String description) {
-        this("T", description);
+        this(TaskType.TODO, description);
     }
 
     /**
-     * Creates a task with a caller-supplied type icon.
+     * Creates a task with a caller-supplied type.
      *
-     * <p>This constructor is retained for compatibility with the earlier
-     * two-argument task creation code. New specialized tasks should use
-     * {@link Deadline} or {@link Event} instead.</p>
-     *
-     * @param taskType the type icon to display
+     * @param taskType the task type
      * @param description the task description
      */
-    public Task(String taskType, String description) {
+    public Task(TaskType taskType, String description) {
         this.taskType = taskType;
         this.description = description;
         this.isDone = false;
+    }
+
+    /**
+     * Returns this task's type.
+     *
+     * @return the task type
+     */
+    public TaskType getTaskType() {
+        return taskType;
     }
 
     /**
@@ -38,7 +43,11 @@ public class Task {
      * @return the task type icon
      */
     public String getTypeIcon() {
-        return taskType;
+        return switch (taskType) {
+        case TODO -> "T";
+        case DEADLINE -> "D";
+        case EVENT -> "E";
+        };
     }
 
     /**

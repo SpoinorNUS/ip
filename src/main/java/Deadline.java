@@ -12,18 +12,8 @@ public class Deadline extends Task {
      * @param by the deadline text
      */
     public Deadline(String description, String by) {
-        super(description);
+        super(TaskType.DEADLINE, description);
         this.by = by;
-    }
-
-    /**
-     * Returns the deadline type icon.
-     *
-     * @return {@code D}
-     */
-    @Override
-    public String getTypeIcon() {
-        return "D";
     }
 
     /**
