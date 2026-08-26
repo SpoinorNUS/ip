@@ -16,6 +16,9 @@ bin/
 # Temp files
 _temp/
 
+# Runtime task data
+/data/
+
 # Project-local Codex skills
 /.codex/skills/present-changes-visually/
 
