@@ -4,7 +4,7 @@ This plan covers the command-line interaction documented for Turtley. Each test 
 
 ## Test case 1: To-do, deadline, and event workflow
 
-Aim: Verify that ordinary to-dos, deadlines, and events are accepted, displayed with the correct type icons and details, retained in insertion order, and counted correctly.
+Aim: Verify that ordinary to-dos, deadlines, and events are accepted, displayed with the correct type icons and details, retained in insertion order, counted correctly, and saved after successful list mutations.
 
 Inputs:
 
@@ -200,7 +200,7 @@ Bye. See you around!
 
 ## Test case 4: Delete task workflow
 
-Aim: Verify that a task is deleted by its one-based number, its details and updated task count are shown, and later tasks are renumbered.
+Aim: Verify that a task is deleted by its one-based number, its details and updated task count are shown, later tasks are renumbered, and the updated list is saved.
 
 Inputs:
 

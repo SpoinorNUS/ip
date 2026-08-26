@@ -16,6 +16,7 @@ public class Turtley {
             return;
         }
         taskList.add(newTask);
+        Storage.save(taskList);
         System.out.println(SEPARATOR);
         System.out.println("Got it. I've added this task:");
         System.out.println("  " + newTask);
@@ -111,6 +112,7 @@ public class Turtley {
             }
 
             taskList.get(taskIndex).markAsDone();
+            Storage.save(taskList);
             System.out.println(SEPARATOR);
             System.out.println(" Nice! I've marked this task as done:");
             System.out.println("   [" + taskList.get(taskIndex).getStatusIcon() + "] "
@@ -130,6 +132,7 @@ public class Turtley {
             }
 
             taskList.get(taskIndex).markAsNotDone();
+            Storage.save(taskList);
             System.out.println(SEPARATOR);
             System.out.println(" OK, I've marked this task as not done yet:");
             System.out.println("   [" + taskList.get(taskIndex).getStatusIcon() + "] "
@@ -153,6 +156,7 @@ public class Turtley {
             }
 
             Task deletedTask = taskList.remove(taskIndex);
+            Storage.save(taskList);
             System.out.println(SEPARATOR);
             System.out.println(" Noted. I've removed this task:");
             System.out.println("   " + deletedTask);
