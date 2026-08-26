@@ -7,8 +7,27 @@ public class Turtley {
     private static final int MAX_TASK_NUM = 100;
     private static final ArrayList<Task> taskList = new ArrayList<>();
 
+    /**
+     * Saves the current list and reports persistence errors without terminating the chatbot.
+     *
+     * @return {@code true} if the list was saved successfully
+     */
+    private static boolean saveTaskList() {
+        try {
+            Storage.save(taskList);
+            return true;
+        } catch (TurtleyException exception) {
+            showError(exception);
+            return false;
+        }
+    }
+
     //Adds a task object to the task list.
     public static void add(Task newTask) {
+        if (newTask == null) {
+            showError(new TurtleyException("Cannot add a null task."));
+            return;
+        }
         if (taskList.size() >= MAX_TASK_NUM) {
             System.out.println(SEPARATOR);
             System.out.println("Task list full, do some work you lazy bum! o/T\\>");
@@ -16,7 +35,10 @@ public class Turtley {
             return;
         }
         taskList.add(newTask);
-        Storage.save(taskList);
+        if (!saveTaskList()) {
+            taskList.remove(taskList.size() - 1);
+            return;
+        }
         System.out.println(SEPARATOR);
         System.out.println("Got it. I've added this task:");
         System.out.println("  " + newTask);
@@ -26,6 +48,10 @@ public class Turtley {
 
     //Adds a task using its enum-based type.
     public static void add(TaskType taskType, String input) {
+        if (taskType == null) {
+            showError(new TurtleyException("Cannot add a task with an invalid type."));
+            return;
+        }
         if (taskType == TaskType.TODO) {
             try {
                 add(new ToDo(input));
@@ -111,8 +137,15 @@ public class Turtley {
                 throw new TurtleyException("Task number is not in your list.");
             }
 
-            taskList.get(taskIndex).markAsDone();
-            Storage.save(taskList);
+            Task task = taskList.get(taskIndex);
+            boolean wasDone = task.isDone();
+            task.markAsDone();
+            if (!saveTaskList()) {
+                if (!wasDone) {
+                    task.markAsNotDone();
+                }
+                return;
+            }
             System.out.println(SEPARATOR);
             System.out.println(" Nice! I've marked this task as done:");
             System.out.println("   [" + taskList.get(taskIndex).getStatusIcon() + "] "
@@ -131,8 +164,15 @@ public class Turtley {
                 throw new TurtleyException("Task number is not in your list.");
             }
 
-            taskList.get(taskIndex).markAsNotDone();
-            Storage.save(taskList);
+            Task task = taskList.get(taskIndex);
+            boolean wasDone = task.isDone();
+            task.markAsNotDone();
+            if (!saveTaskList()) {
+                if (wasDone) {
+                    task.markAsDone();
+                }
+                return;
+            }
             System.out.println(SEPARATOR);
             System.out.println(" OK, I've marked this task as not done yet:");
             System.out.println("   [" + taskList.get(taskIndex).getStatusIcon() + "] "
@@ -156,7 +196,10 @@ public class Turtley {
             }
 
             Task deletedTask = taskList.remove(taskIndex);
-            Storage.save(taskList);
+            if (!saveTaskList()) {
+                taskList.add(taskIndex, deletedTask);
+                return;
+            }
             System.out.println(SEPARATOR);
             System.out.println(" Noted. I've removed this task:");
             System.out.println("   " + deletedTask);
