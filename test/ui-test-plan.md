@@ -1,6 +1,6 @@
 # UI Test Plan
 
-This plan covers the command-line interaction documented for Turtley. Each test case starts a fresh program session. The `inputs` and `expected_outputs` arrays in the JSON block are aligned by position: each expected output must appear after the corresponding input's earlier output.
+This plan covers the command-line interaction documented for Turtley. Each test case starts a fresh program session. The persistence cases run in order: test case 1 creates the save file, and test case 2 verifies loading it before clearing the list. Delete data/turtley.txt before starting a new full run. The `inputs` and `expected_outputs` arrays in the JSON block are aligned by position: each expected output must appear after the corresponding input's earlier output.
 
 ## Test case 1: To-do, deadline, and event workflow
 
@@ -45,7 +45,7 @@ The executable expected-output list is kept below so the `test-ui` skill can run
   "test_cases": [
     {
       "name": "To-do, deadline, and event workflow",
-      "aim": "Verify creation, formatting, listing, completion status, and task counts for all supported task types.",
+      "aim": "Verify creation, formatting, listing, completion status, task counts, and automatic saving for all supported task types.",
       "inputs": [
         "todo read book",
         "deadline return book /by June 6th",
@@ -74,15 +74,31 @@ The executable expected-output list is kept below so the `test-ui` skill can run
       ]
     },
     {
-      "name": "To-do without a name",
-      "aim": "Verify that missing to-do names are rejected without adding empty tasks.",
+      "name": "Load saved tasks and clear list",
+      "aim": "Verify that tasks saved by an earlier session are restored on startup, that missing to-do names are rejected, and that the list can be cleared for later cases.",
       "inputs": [
+        "list",
         "todo",
+        "delete 1",
+        "delete 1",
+        "delete 1",
+        "delete 1",
+        "delete 1",
+        "delete 1",
+        "delete 1",
         "list",
         "bye"
       ],
       "expected_outputs": [
+        "Here are the tasks in your list:\n 1.[T][X] read book\n 2.[D][ ] return book (by: June 6th)\n 3.[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)\n 4.[T][X] join sports club\n 5.[T][ ] borrow book\n 6.[D][ ] return book (by: Sunday)\n 7.[E][ ] project meeting (from: Mon 2pm to: 4pm)",
         "Invalid format. Use: todo <description> o/T\\>",
+        "Noted. I've removed this task:\n   [T][X] read book\n Now you have 6 tasks in the list.",
+        "Noted. I've removed this task:\n   [D][ ] return book (by: June 6th)\n Now you have 5 tasks in the list.",
+        "Noted. I've removed this task:\n   [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)\n Now you have 4 tasks in the list.",
+        "Noted. I've removed this task:\n   [T][X] join sports club\n Now you have 3 tasks in the list.",
+        "Noted. I've removed this task:\n   [T][ ] borrow book\n Now you have 2 tasks in the list.",
+        "Noted. I've removed this task:\n   [D][ ] return book (by: Sunday)\n Now you have 1 tasks in the list.",
+        "Noted. I've removed this task:\n   [E][ ] project meeting (from: Mon 2pm to: 4pm)\n Now you have 0 tasks in the list.",
         "Task list empty. Good job! Here's a cookie. o/T\\>",
         "Bye. See you around!"
       ]
@@ -115,7 +131,7 @@ The executable expected-output list is kept below so the `test-ui` skill can run
     },
     {
       "name": "Delete task workflow",
-      "aim": "Verify that a task can be deleted by its one-based number, that its details are shown, that the count decreases, and that later tasks are renumbered.",
+      "aim": "Verify that a task can be deleted by its one-based number, that its details are shown, that the count decreases, that later tasks are renumbered, and that the updated list is saved.",
       "inputs": [
         "todo read book",
         "deadline return book /by June 6th",
@@ -147,14 +163,22 @@ The executable expected-output list is kept below so the `test-ui` skill can run
 }
 ```
 
-## Test case 2: To-do without a name
+## Test case 2: Load saved tasks and clear list
 
-Aim: Verify that a to-do command without a name is rejected without adding an empty task.
+Aim: Verify that tasks saved by the previous session are restored on startup, that a missing to-do name is rejected, and that the list can be cleared for later test cases.
 
 Inputs:
 
 ```text
+list
 todo
+delete 1
+delete 1
+delete 1
+delete 1
+delete 1
+delete 1
+delete 1
 list
 bye
 ```
@@ -162,10 +186,17 @@ bye
 Expected output:
 
 ```text
+Here are the tasks in your list:
+ 1.[T][X] read book
+ 2.[D][ ] return book (by: June 6th)
+ 3.[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+ 4.[T][X] join sports club
+ 5.[T][ ] borrow book
+ 6.[D][ ] return book (by: Sunday)
+ 7.[E][ ] project meeting (from: Mon 2pm to: 4pm)
 Invalid format. Use: todo <description> o/T\>
 Task list empty. Good job! Here's a cookie. o/T\>
 ```
-
 ## Test case 3: Error messages
 
 Aim: Verify that invalid commands, task numbers, and structured task formats use the custom Turtley error message suffix.

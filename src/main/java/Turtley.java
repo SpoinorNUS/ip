@@ -265,6 +265,12 @@ public class Turtley {
         System.out.println("What can I do for you? o/T\\>");
         System.out.println(SEPARATOR);
 
+        try {
+            taskList.addAll(StorageReader.load());
+        } catch (TurtleyException exception) {
+            showError(exception);
+        }
+
         //running variable is true when the application is running
         boolean running = true;
 
