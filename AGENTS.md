@@ -24,6 +24,15 @@ Unless the user says otherwise, assume that you are assisting a student working 
 
 # Project-specific requirements
 
+## Java coding standard
+
+Apply the project-specific `seedu-java-coding-standard` skill to every Java code change in
+`src/main/java` and `src/test/java`. All production code and tests must follow the SE-EDU
+basic and intermediate Java coding conventions documented in
+`.codex/skills/seedu-java-coding-standard/SKILL.md`, using Google Java Style for topics that
+the SE-EDU standard does not cover. Review changed Java files for naming, package/import
+order, four-space indentation, 120-character line length, K&R braces, explicit braces on
+control-flow bodies, variable scope, and descriptive Javadocs before completing the change.
 ## JUnit coverage target
 
 Maintain JUnit tests for at least the highest-value 50% of methods, prioritizing
