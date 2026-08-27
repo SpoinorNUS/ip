@@ -3,7 +3,7 @@ import java.time.temporal.Temporal;
 
 public class Turtley {
 
-    private static final String SEPARATOR = "____________________________________________________________";
+    private static final Ui ui = new Ui();
     private static final TaskList taskList = new TaskList();
 
     /**
@@ -16,7 +16,7 @@ public class Turtley {
             Storage.save(taskList.asList());
             return true;
         } catch (TurtleyException exception) {
-            showError(exception);
+            ui.showError(exception);
             return false;
         }
     }
@@ -24,13 +24,11 @@ public class Turtley {
     //Adds a task object to the task list.
     public static void add(Task newTask) {
         if (newTask == null) {
-            showError(new TurtleyException("Cannot add a null task."));
+            ui.showError(new TurtleyException("Cannot add a null task."));
             return;
         }
         if (taskList.isFull()) {
-            System.out.println(SEPARATOR);
-            System.out.println("Task list full, do some work you lazy bum! o/T\\>");
-            System.out.println(SEPARATOR);
+            ui.showTaskListFull();
             return;
         }
         taskList.add(newTask);
@@ -38,24 +36,20 @@ public class Turtley {
             taskList.remove(taskList.size() - 1);
             return;
         }
-        System.out.println(SEPARATOR);
-        System.out.println("Got it. I've added this task:");
-        System.out.println("  " + newTask);
-        System.out.println("Now you have " + taskList.size() + " tasks in the list.");
-        System.out.println(SEPARATOR);
+        ui.showTaskAdded(newTask, taskList.size());
     }
 
     //Adds a task using its enum-based type.
     public static void add(TaskType taskType, String input) {
         if (taskType == null) {
-            showError(new TurtleyException("Cannot add a task with an invalid type."));
+            ui.showError(new TurtleyException("Cannot add a task with an invalid type."));
             return;
         }
         if (taskType == TaskType.TODO) {
             try {
                 add(new ToDo(input));
             } catch (TurtleyException exception) {
-                showError(exception);
+                ui.showError(exception);
             }
         } else {
             add(new Task(taskType, input));
@@ -79,7 +73,7 @@ public class Turtley {
         try {
             add(new Deadline(description, DateTimeParser.parse(by)));
         } catch (TurtleyException exception) {
-            showError(exception);
+            ui.showError(exception);
         }
     }
 
@@ -102,38 +96,18 @@ public class Turtley {
         try {
             add(new Event(description, DateTimeParser.parse(from), DateTimeParser.parse(to)));
         } catch (TurtleyException exception) {
-            showError(exception);
+            ui.showError(exception);
         }
     }
 
     //Prints a helpful message when a structured task command is malformed.(Written by ChatGPT)
     private static void showInvalidTaskFormat(String format) {
-        showError(new TurtleyException("Invalid format. Use: " + format));
-    }
-
-    //Prints a user-facing error while keeping the Turtley prompt suffix consistent.
-    private static void showError(TurtleyException exception) {
-        System.out.println(SEPARATOR);
-        System.out.println(" " + exception.getMessage() + " o/T\\>");
-        System.out.println(SEPARATOR);
+        ui.showError(new TurtleyException("Invalid format. Use: " + format));
     }
 
     //Reads from the taskList
     public static void list() {
-        if (taskList.isEmpty()) {
-            System.out.println(SEPARATOR);
-            System.out.println("Task list empty. Good job! Here's a cookie. o/T\\>");
-            System.out.println(SEPARATOR);
-            return;
-        }
-
-        //Print out list display
-        System.out.println(SEPARATOR);
-        System.out.println(" Here are the tasks in your list:");
-        for (int i = 0; i < taskList.size(); i++) {
-            System.out.println(" " + (i + 1) + "." + taskList.get(i));
-        }
-        System.out.println(SEPARATOR);
+        ui.showTaskList(taskList.asList());
     }
 
     //(Written by ChatGPT)
@@ -149,8 +123,7 @@ public class Turtley {
             String cutoffText = DateTimeParser.format(cutoff);
             boolean hasMatchingTask = false;
 
-            System.out.println(SEPARATOR);
-            System.out.println(" Here are the deadline and event tasks on or before " + cutoffText + ":");
+            ui.showTimecheckHeader(cutoffText);
             for (int i = 0; i < taskList.size(); i++) {
                 Task task = taskList.get(i);
                 boolean isDeadline = task instanceof Deadline deadline
@@ -159,15 +132,15 @@ public class Turtley {
                         && DateTimeParser.isOnOrBefore(event.getFrom(), cutoff);
                 if (isDeadline || isEvent) {
                     hasMatchingTask = true;
-                    System.out.println(" " + (i + 1) + "." + task);
+                    ui.showTask(i, task);
                 }
             }
             if (!hasMatchingTask) {
-                System.out.println("None! o/T\\>");
+                ui.showNoMatchingTasks();
             }
-            System.out.println(SEPARATOR);
+            ui.showSeparator();
         } catch (TurtleyException exception) {
-            showError(exception);
+            ui.showError(exception);
         }
     }
 
@@ -188,13 +161,9 @@ public class Turtley {
                 }
                 return;
             }
-            System.out.println(SEPARATOR);
-            System.out.println(" Nice! I've marked this task as done:");
-            System.out.println("   [" + taskList.get(taskIndex).getStatusIcon() + "] "
-                    + taskList.get(taskIndex).getDescription());
-            System.out.println(SEPARATOR);
+            ui.showTaskMarked(taskList.get(taskIndex));
         } catch (TurtleyException exception) {
-            showError(exception);
+            ui.showError(exception);
         }
     }
 
@@ -215,13 +184,9 @@ public class Turtley {
                 }
                 return;
             }
-            System.out.println(SEPARATOR);
-            System.out.println(" OK, I've marked this task as not done yet:");
-            System.out.println("   [" + taskList.get(taskIndex).getStatusIcon() + "] "
-                    + taskList.get(taskIndex).getDescription());
-            System.out.println(SEPARATOR);
+            ui.showTaskUnmarked(taskList.get(taskIndex));
         } catch (TurtleyException exception) {
-            showError(exception);
+            ui.showError(exception);
         }
     }
 
@@ -242,13 +207,9 @@ public class Turtley {
                 taskList.add(taskIndex, deletedTask);
                 return;
             }
-            System.out.println(SEPARATOR);
-            System.out.println(" Noted. I've removed this task:");
-            System.out.println("   " + deletedTask);
-            System.out.println(" Now you have " + taskList.size() + " tasks in the list.");
-            System.out.println(SEPARATOR);
+            ui.showTaskDeleted(deletedTask, taskList.size());
         } catch (TurtleyException exception) {
-            showError(exception);
+            ui.showError(exception);
         }
     }
 
@@ -294,23 +255,20 @@ public class Turtley {
 
     //Terminates the app
     public static void bye() {
-        System.out.println(SEPARATOR);
-        System.out.println("Bye. See you around! o/T\\>");
-        System.out.println(SEPARATOR);
+        ui.showGoodbye();
     }
 
     //Waits for input from the user
     public static boolean prompt(Scanner keyboard) {
-        //Line 21-24 written by ChatGPT (I genuinely think this is unnecessary though)
-        if (!keyboard.hasNextLine()) {
+        String input = ui.readLine(keyboard);
+        if (input == null) {
             return false;
         }
 
-        Parser.Command command = Parser.parse(keyboard.nextLine());
+        Parser.Command command = Parser.parse(input);
         switch (command.getType()) {
         case EMPTY:
-            System.out.println("Please input something. o/T\\>");
-            System.out.println(SEPARATOR);
+            ui.showEmptyInput();
             return true;
         case BYE:
             bye();
@@ -341,31 +299,19 @@ public class Turtley {
             return true;
         case UNKNOWN:
         default:
-            System.out.println("Please input something correct. o/T\\>");
-            System.out.println(SEPARATOR);
+            ui.showUnknownCommand();
             return true;
         }
     }
 
     public static void main(String[] args) {
         //Turtley ASCII art was by me.
-        String banner = "      _____________ \n"
-                + "__   /__|_______|__\\ \n"
-                + "\\^ \\/______|_|______\\\n"
-                + " \\ /_______|_|_______\\>\n"
-                + "   |_/ |_/     \\_| \\_|\n Turtley";
-
-        //Line 11-17 was written by ChatGPT.
-        System.out.println(SEPARATOR);
-        System.out.println(banner);
-        System.out.println("Hello! I'm Turtley.");
-        System.out.println("What can I do for you? o/T\\>");
-        System.out.println(SEPARATOR);
+        ui.showWelcome();
 
         try {
             taskList.addAll(Storage.load());
         } catch (TurtleyException exception) {
-            showError(exception);
+            ui.showError(exception);
         }
 
         //running variable is true when the application is running
