@@ -130,8 +130,8 @@ The executable expected-output list is kept below so the `test-ui` skill can run
         "Task number is not in your list. o/T\\>",
         "Please input something. o/T\\>",
         "Please input something correct. o/T\\>",
-        "Invalid date/time format. Use yyyy-MM-dd, dd-MM-yyyy, yyyy-MM-dd HH:mm, dd-MM-yyyy HH:mm, yyyy-MM-dd HHmm, or dd-MM-yyyy HHmm. o/T\\>",
-        "Invalid date/time format. Use yyyy-MM-dd, dd-MM-yyyy, yyyy-MM-dd HH:mm, dd-MM-yyyy HH:mm, yyyy-MM-dd HHmm, or dd-MM-yyyy HHmm. o/T\\>",
+        "Invalid date/time format. Use yyyy-MM-dd, dd-MM-yyyy, yyyy/MM/dd, dd/MM/yyyy, yyyy-MM-dd HH:mm, dd-MM-yyyy HH:mm, yyyy/MM/dd HH:mm, dd/MM/yyyy HH:mm, yyyy-MM-dd HHmm, dd-MM-yyyy HHmm, yyyy/MM/dd HHmm, or dd/MM/yyyy HHmm. o/T\\>",
+        "Invalid date/time format. Use yyyy-MM-dd, dd-MM-yyyy, yyyy/MM/dd, dd/MM/yyyy, yyyy-MM-dd HH:mm, dd-MM-yyyy HH:mm, yyyy/MM/dd HH:mm, dd/MM/yyyy HH:mm, yyyy-MM-dd HHmm, dd-MM-yyyy HHmm, yyyy/MM/dd HHmm, or dd/MM/yyyy HHmm. o/T\\>",
         "Got it. I've added this task:\n  [E][ ] compact time (from: 2026-12-31 23:00 to: 2027-01-01 00:30)\nNow you have 1 tasks in the list.",
         "Noted. I've removed this task:\n   [E][ ] compact time (from: 2026-12-31 23:00 to: 2027-01-01 00:30)\n Now you have 0 tasks in the list.",
         "Bye. See you around!"
@@ -171,7 +171,7 @@ The executable expected-output list is kept below so the `test-ui` skill can run
       "name": "Timecheck workflow",
       "aim": "Verify that timecheck lists only deadlines and events on or before a supplied date/time, handles no matches, rejects invalid input, and does not alter the task list.",
       "inputs": [
-        "event planning /from 06-08-2026 09:00 /to 06-08-2026 10:00",
+        "event planning /from 06/08/2026 09:00 /to 06/08/2026 10:00",
         "timecheck 2026-06-30",
         "timecheck 2026-08-27 12:00",
         "timecheck 2025-01-01",
@@ -183,8 +183,8 @@ The executable expected-output list is kept below so the `test-ui` skill can run
         "Got it. I've added this task:\n  [E][ ] planning (from: 2026-08-06 09:00 to: 2026-08-06 10:00)\nNow you have 5 tasks in the list.",
         "Here are the deadline and event tasks on or before 2026-06-30:\n 2.[D][X] return book (by: 2026-06-06)",
         "Here are the deadline and event tasks on or before 2026-08-27 12:00:\n 2.[D][X] return book (by: 2026-06-06)\n 5.[E][ ] planning (from: 2026-08-06 09:00 to: 2026-08-06 10:00)",
-        "Here are the deadline and event tasks on or before 2025-01-01:\n No deadline or event tasks found on or before 2025-01-01.",
-        "Invalid date/time format. Use yyyy-MM-dd, dd-MM-yyyy, yyyy-MM-dd HH:mm, dd-MM-yyyy HH:mm, yyyy-MM-dd HHmm, or dd-MM-yyyy HHmm. o/T\\>",
+        "Here are the deadline and event tasks on or before 2025-01-01:\nNone! o/T\\>",
+        "Invalid date/time format. Use yyyy-MM-dd, dd-MM-yyyy, yyyy/MM/dd, dd/MM/yyyy, yyyy-MM-dd HH:mm, dd-MM-yyyy HH:mm, yyyy/MM/dd HH:mm, dd/MM/yyyy HH:mm, yyyy-MM-dd HHmm, dd-MM-yyyy HHmm, yyyy/MM/dd HHmm, or dd/MM/yyyy HHmm. o/T\\>",
         "Noted. I've removed this task:\n   [E][ ] planning (from: 2026-08-06 09:00 to: 2026-08-06 10:00)\n Now you have 4 tasks in the list.",
         "Bye. See you around!"
       ]
@@ -260,8 +260,8 @@ Task number is not in your list. o/T\>
 Task number is not in your list. o/T\>
 Please input something. o/T\>
 Please input something correct. o/T\>
-Invalid date/time format. Use yyyy-MM-dd, dd-MM-yyyy, yyyy-MM-dd HH:mm, dd-MM-yyyy HH:mm, yyyy-MM-dd HHmm, or dd-MM-yyyy HHmm. o/T\>
-Invalid date/time format. Use yyyy-MM-dd, dd-MM-yyyy, yyyy-MM-dd HH:mm, dd-MM-yyyy HH:mm, yyyy-MM-dd HHmm, or dd-MM-yyyy HHmm. o/T\>
+Invalid date/time format. Use yyyy-MM-dd, dd-MM-yyyy, yyyy/MM/dd, dd/MM/yyyy, yyyy-MM-dd HH:mm, dd-MM-yyyy HH:mm, yyyy/MM/dd HH:mm, dd/MM/yyyy HH:mm, yyyy-MM-dd HHmm, dd-MM-yyyy HHmm, yyyy/MM/dd HHmm, or dd/MM/yyyy HHmm. o/T\>
+Invalid date/time format. Use yyyy-MM-dd, dd-MM-yyyy, yyyy/MM/dd, dd/MM/yyyy, yyyy-MM-dd HH:mm, dd-MM-yyyy HH:mm, yyyy/MM/dd HH:mm, dd/MM/yyyy HH:mm, yyyy-MM-dd HHmm, dd-MM-yyyy HHmm, yyyy/MM/dd HHmm, or dd/MM/yyyy HHmm. o/T\>
 Got it. I've added this task:
   [E][ ] compact time (from: 2026-12-31 23:00 to: 2027-01-01 00:30)
 Now you have 1 tasks in the list.
@@ -316,7 +316,7 @@ Aim: Verify that timecheck lists only deadlines and events on or before a suppli
 Inputs:
 
 ```text
-event planning /from 06-08-2026 09:00 /to 06-08-2026 10:00
+event planning /from 06/08/2026 09:00 /to 06/08/2026 10:00
 timecheck 2026-06-30
 timecheck 2026-08-27 12:00
 timecheck 2025-01-01
@@ -337,8 +337,8 @@ Now you have 5 tasks in the list.
  2.[D][X] return book (by: 2026-06-06)
  5.[E][ ] planning (from: 2026-08-06 09:00 to: 2026-08-06 10:00)
  Here are the deadline and event tasks on or before 2025-01-01:
- No deadline or event tasks found on or before 2025-01-01.
-Invalid date/time format. Use yyyy-MM-dd, dd-MM-yyyy, yyyy-MM-dd HH:mm, dd-MM-yyyy HH:mm, yyyy-MM-dd HHmm, or dd-MM-yyyy HHmm. o/T\>
+None! o/T\>
+Invalid date/time format. Use yyyy-MM-dd, dd-MM-yyyy, yyyy/MM/dd, dd/MM/yyyy, yyyy-MM-dd HH:mm, dd-MM-yyyy HH:mm, yyyy/MM/dd HH:mm, dd/MM/yyyy HH:mm, yyyy-MM-dd HHmm, dd-MM-yyyy HHmm, yyyy/MM/dd HHmm, or dd/MM/yyyy HHmm. o/T\>
  Noted. I've removed this task:
    [E][ ] planning (from: 2026-08-06 09:00 to: 2026-08-06 10:00)
  Now you have 4 tasks in the list.

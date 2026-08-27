@@ -14,19 +14,29 @@ public final class DateTimeParser {
 
     /** The formats shown to users when a date/time value is invalid. */
     private static final String SUPPORTED_FORMATS =
-            "yyyy-MM-dd, dd-MM-yyyy, yyyy-MM-dd HH:mm, dd-MM-yyyy HH:mm, yyyy-MM-dd HHmm, or dd-MM-yyyy HHmm";
+            "yyyy-MM-dd, dd-MM-yyyy, yyyy/MM/dd, dd/MM/yyyy, yyyy-MM-dd HH:mm, "
+                    + "dd-MM-yyyy HH:mm, yyyy/MM/dd HH:mm, dd/MM/yyyy HH:mm, "
+                    + "yyyy-MM-dd HHmm, dd-MM-yyyy HHmm, yyyy/MM/dd HHmm, or dd/MM/yyyy HHmm";
 
     private static final List<DateTimeFormatter> DATE_TIME_FORMATTERS = List.of(
             formatter("uuuu-MM-dd HH:mm"),
             formatter("dd-MM-uuuu HH:mm"),
             formatter("uuuu-MM-dd HHmm"),
             formatter("dd-MM-uuuu HHmm"),
+            formatter("uuuu/MM/dd HH:mm"),
+            formatter("dd/MM/uuuu HH:mm"),
+            formatter("uuuu/MM/dd HHmm"),
+            formatter("dd/MM/uuuu HHmm"),
             formatter("uuuu-MM-dd'T'HH:mm"),
-            formatter("dd-MM-uuuu'T'HH:mm"));
+            formatter("dd-MM-uuuu'T'HH:mm"),
+            formatter("uuuu/MM/dd'T'HH:mm"),
+            formatter("dd/MM/uuuu'T'HH:mm"));
 
     private static final List<DateTimeFormatter> DATE_FORMATTERS = List.of(
             formatter("uuuu-MM-dd"),
-            formatter("dd-MM-uuuu"));
+            formatter("dd-MM-uuuu"),
+            formatter("uuuu/MM/dd"),
+            formatter("dd/MM/uuuu"));
 
     private DateTimeParser() {
         // Utility class; do not create instances.
