@@ -355,7 +355,7 @@ public class Turtley {
         System.out.println(SEPARATOR);
 
         try {
-            taskList.addAll(StorageReader.load());
+            taskList.addAll(Storage.load());
         } catch (TurtleyException exception) {
             showError(exception);
         }
