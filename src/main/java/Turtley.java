@@ -305,35 +305,45 @@ public class Turtley {
         if (!keyboard.hasNextLine()) {
             return false;
         }
-        String input = keyboard.nextLine();
-        switch (input) {
-            case "" -> {System.out.println("Please input something. o/T\\>");
-                        System.out.println(SEPARATOR);
-                        return true;}
-            case "bye" -> {bye(); return false;}
-            case "list" -> {list(); return true;}
-            default -> {
-                if (input.startsWith("mark ")) { //(Written by ChatGPT)
-                    mark(input.substring(5).trim());
-                } else if (input.startsWith("unmark ")) { //(Written by ChatGPT)
-                    unmark(input.substring(7).trim());
-                } else if (input.equals("delete") || input.startsWith("delete ")) {
-                    delete(input.length() == 6 ? "" : input.substring(7).trim());
-                } else if (input.equals("timecheck") || input.startsWith("timecheck ")) {
-                    timecheck(input.substring("timecheck".length()).trim());
-                } else if (input.equals("todo") || input.startsWith("todo ")) {
-                    String description = input.length() == 4 ? "" : input.substring(5).trim();
-                    add(TaskType.TODO, description);
-                } else if (input.startsWith("deadline ")) {
-                    addDeadline(input.substring(9).trim());
-                } else if (input.startsWith("event ")) {
-                    addEvent(input.substring(6).trim());
-                } else {
-                    System.out.println("Please input something correct. o/T\\>");
-                    System.out.println(SEPARATOR);
-                }
-                return true;
-            }
+
+        Parser.Command command = Parser.parse(keyboard.nextLine());
+        switch (command.getType()) {
+        case EMPTY:
+            System.out.println("Please input something. o/T\\>");
+            System.out.println(SEPARATOR);
+            return true;
+        case BYE:
+            bye();
+            return false;
+        case LIST:
+            list();
+            return true;
+        case MARK:
+            mark(command.getArgument());
+            return true;
+        case UNMARK:
+            unmark(command.getArgument());
+            return true;
+        case DELETE:
+            delete(command.getArgument());
+            return true;
+        case TIMECHECK:
+            timecheck(command.getArgument());
+            return true;
+        case TODO:
+            add(TaskType.TODO, command.getArgument());
+            return true;
+        case DEADLINE:
+            addDeadline(command.getArgument());
+            return true;
+        case EVENT:
+            addEvent(command.getArgument());
+            return true;
+        case UNKNOWN:
+        default:
+            System.out.println("Please input something correct. o/T\\>");
+            System.out.println(SEPARATOR);
+            return true;
         }
     }
 
