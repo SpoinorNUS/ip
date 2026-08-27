@@ -1,39 +1,52 @@
+import java.time.temporal.Temporal;
+
 /**
  * A task that takes place during a specified time range.
  */
 public class Event extends Task {
 
-    private final String from;
-    private final String to;
+    private final Temporal from;
+    private final Temporal to;
 
     /**
      * Creates an unfinished event.
      *
      * @param description the event description
-     * @param from the event start time
-     * @param to the event end time
+     * @param from the parsed event start date or date-time
+     * @param to the parsed event end date or date-time
      */
-    public Event(String description, String from, String to) {
+    public Event(String description, Temporal from, Temporal to) {
         super(TaskType.EVENT, description);
         this.from = from;
         this.to = to;
     }
 
     /**
-     * Returns the event start time.
+     * Creates an unfinished event from user-entered date/time text.
      *
-     * @return the start time
+     * @param description the event description
+     * @param from the event start text
+     * @param to the event end text
      */
-    public String getFrom() {
+    public Event(String description, String from, String to) {
+        this(description, DateTimeParser.parse(from), DateTimeParser.parse(to));
+    }
+
+    /**
+     * Returns the parsed event start value.
+     *
+     * @return the start as a {@link java.time.LocalDate} or {@link java.time.LocalDateTime}
+     */
+    public Temporal getFrom() {
         return from;
     }
 
     /**
-     * Returns the event end time.
+     * Returns the parsed event end value.
      *
-     * @return the end time
+     * @return the end as a {@link java.time.LocalDate} or {@link java.time.LocalDateTime}
      */
-    public String getTo() {
+    public Temporal getTo() {
         return to;
     }
 
@@ -44,6 +57,7 @@ public class Event extends Task {
      */
     @Override
     public String toString() {
-        return super.toString() + " (from: " + from + " to: " + to + ")";
+        return super.toString() + " (from: " + DateTimeParser.format(from)
+                + " to: " + DateTimeParser.format(to) + ")";
     }
 }

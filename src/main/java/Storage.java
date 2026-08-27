@@ -92,14 +92,14 @@ public class Storage {
             if (!(task instanceof Deadline deadline)) {
                 throw new TurtleyException("Unable to save tasks: deadline has no deadline value.");
             }
-            line.append(" | ").append(escape(requireField(deadline.getBy(), "deadline")));
+            line.append(" | ").append(escape(DateTimeParser.format(deadline.getBy())));
             break;
         case EVENT:
             if (!(task instanceof Event event)) {
                 throw new TurtleyException("Unable to save tasks: event has no time range.");
             }
-            line.append(" | ").append(escape(requireField(event.getFrom(), "start time")))
-                    .append(" | ").append(escape(requireField(event.getTo(), "end time")));
+            line.append(" | ").append(escape(DateTimeParser.format(event.getFrom())))
+                    .append(" | ").append(escape(DateTimeParser.format(event.getTo())));
             break;
         default:
             throw new TurtleyException("Unable to save tasks: task type is invalid.");

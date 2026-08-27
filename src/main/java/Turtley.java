@@ -77,7 +77,11 @@ public class Turtley {
             showInvalidTaskFormat("deadline <description> /by <date>");
             return;
         }
-        add(new Deadline(description, by));
+        try {
+            add(new Deadline(description, DateTimeParser.parse(by)));
+        } catch (TurtleyException exception) {
+            showError(exception);
+        }
     }
 
     //Parses and adds an event command's description, /from field, and /to field. (Written by ChatGPT)
@@ -96,7 +100,11 @@ public class Turtley {
             showInvalidTaskFormat("event <description> /from <start> /to <end>");
             return;
         }
-        add(new Event(description, from, to));
+        try {
+            add(new Event(description, DateTimeParser.parse(from), DateTimeParser.parse(to)));
+        } catch (TurtleyException exception) {
+            showError(exception);
+        }
     }
 
     //Prints a helpful message when a structured task command is malformed.(Written by ChatGPT)

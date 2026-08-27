@@ -83,15 +83,15 @@ public class StorageReader {
                 throw invalidLine(lineNumber, line);
             }
             task = new Deadline(requireField(fields.get(2), "description", lineNumber),
-                    requireField(fields.get(3), "deadline", lineNumber));
+                    parseDateTime(fields.get(3), "deadline", lineNumber));
             break;
         case "E":
             if (fields.size() != 5) {
                 throw invalidLine(lineNumber, line);
             }
             task = new Event(requireField(fields.get(2), "description", lineNumber),
-                    requireField(fields.get(3), "start time", lineNumber),
-                    requireField(fields.get(4), "end time", lineNumber));
+                    parseDateTime(fields.get(3), "start time", lineNumber),
+                    parseDateTime(fields.get(4), "end time", lineNumber));
             break;
         default:
             throw invalidLine(lineNumber, line);
@@ -173,6 +173,23 @@ public class StorageReader {
                     + fieldName + " is blank.");
         }
         return value;
+    }
+
+    /**
+     * Parses a date/time field loaded from disk and adds line context to failures.
+     *
+     * @param value the stored date/time text
+     * @param fieldName the field's human-readable name
+     * @param lineNumber the line number used in error messages
+     * @return the parsed date or date-time
+     */
+    private static java.time.temporal.Temporal parseDateTime(String value, String fieldName, int lineNumber) {
+        try {
+            return DateTimeParser.parse(requireField(value, fieldName, lineNumber));
+        } catch (TurtleyException exception) {
+            throw new TurtleyException("Invalid task data on line " + lineNumber + ": "
+                    + fieldName + " has an invalid date/time format.", exception);
+        }
     }
 
     /**
