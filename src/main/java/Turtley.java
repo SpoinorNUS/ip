@@ -1,12 +1,10 @@
-import java.util.ArrayList;
 import java.util.Scanner;
 import java.time.temporal.Temporal;
 
 public class Turtley {
 
     private static final String SEPARATOR = "____________________________________________________________";
-    private static final int MAX_TASK_NUM = 100;
-    private static final ArrayList<Task> taskList = new ArrayList<>();
+    private static final TaskList taskList = new TaskList();
 
     /**
      * Saves the current list and reports persistence errors without terminating the chatbot.
@@ -15,7 +13,7 @@ public class Turtley {
      */
     private static boolean saveTaskList() {
         try {
-            Storage.save(taskList);
+            Storage.save(taskList.asList());
             return true;
         } catch (TurtleyException exception) {
             showError(exception);
@@ -29,7 +27,7 @@ public class Turtley {
             showError(new TurtleyException("Cannot add a null task."));
             return;
         }
-        if (taskList.size() >= MAX_TASK_NUM) {
+        if (taskList.isFull()) {
             System.out.println(SEPARATOR);
             System.out.println("Task list full, do some work you lazy bum! o/T\\>");
             System.out.println(SEPARATOR);
