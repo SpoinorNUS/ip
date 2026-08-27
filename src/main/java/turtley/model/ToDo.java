@@ -1,3 +1,7 @@
+package turtley.model;
+
+import turtley.exception.TurtleyException;
+
 /**
  * A task without a deadline or event time range.
  */

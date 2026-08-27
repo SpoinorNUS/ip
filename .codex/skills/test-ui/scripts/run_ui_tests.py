@@ -40,7 +40,7 @@ def java_major_version() -> str:
 
 
 def compile_project(project_root: Path, classes_dir: Path) -> None:
-    source_files = sorted((project_root / "src" / "main" / "java").glob("*.java"))
+    source_files = sorted((project_root / "src" / "main" / "java").rglob("*.java"))
     if not source_files:
         raise RuntimeError("No Java source files found under src/main/java")
 
@@ -81,7 +81,7 @@ def run_case(project_root: Path, classes_dir: Path, case: dict, index: int) -> b
     name, inputs, expected = validate_case(case, index)
     session_input = "\n".join(inputs) + "\n"
     process = subprocess.Popen(
-        ["java", "-cp", str(classes_dir), "Turtley"],
+        ["java", "-cp", str(classes_dir), "turtley.Turtley"],
         cwd=project_root,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,

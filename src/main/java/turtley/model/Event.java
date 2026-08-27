@@ -1,4 +1,8 @@
+package turtley.model;
+
 import java.time.temporal.Temporal;
+
+import turtley.util.DateTimeParser;
 
 /**
  * A task that takes place during a specified time range.

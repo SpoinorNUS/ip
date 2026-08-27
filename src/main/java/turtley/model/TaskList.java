@@ -1,6 +1,10 @@
+package turtley.model;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import turtley.exception.TurtleyException;
 
 /**
  * Owns Turtley's ordered collection of tasks and its basic list operations.

@@ -1,3 +1,10 @@
+package turtley.command;
+
+import turtley.model.Task;
+import turtley.model.TaskList;
+import turtley.storage.Storage;
+import turtley.ui.Ui;
+
 /**
  * Base class for commands that create and save one new task.
  */

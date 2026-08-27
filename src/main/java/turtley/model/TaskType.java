@@ -1,3 +1,5 @@
+package turtley.model;
+
 /**
  * Identifies the supported kinds of tasks.
  */
