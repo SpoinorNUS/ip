@@ -20,6 +20,8 @@ class ParserTest {
         assertAll(
                 () -> assertInstanceOf(ExitCommand.class, Parser.parse("bye")),
                 () -> assertInstanceOf(ListCommand.class, Parser.parse("list")),
+                () -> assertInstanceOf(FindCommand.class, Parser.parse("find book")),
+                () -> assertInstanceOf(FindCommand.class, Parser.parse("find")),
                 () -> assertInstanceOf(MarkCommand.class, Parser.parse("mark 2")),
                 () -> assertInstanceOf(UnmarkCommand.class, Parser.parse("unmark 2")),
                 () -> assertInstanceOf(DeleteCommand.class, Parser.parse("delete")),

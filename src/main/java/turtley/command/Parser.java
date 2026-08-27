@@ -25,6 +25,9 @@ public class Parser {
         if (input.equals("list")) {
             return new ListCommand();
         }
+        if (input.equals("find") || input.startsWith("find ")) {
+            return new FindCommand(input.length() == 4 ? "" : input.substring(5).trim());
+        }
         if (input.startsWith("mark ")) {
             return new MarkCommand(input.substring(5).trim());
         }
