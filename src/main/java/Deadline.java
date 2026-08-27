@@ -1,27 +1,39 @@
+import java.time.temporal.Temporal;
+
 /**
  * A task that must be completed by a specified time.
  */
 public class Deadline extends Task {
 
-    private final String by;
+    private final Temporal by;
 
     /**
      * Creates an unfinished deadline.
      *
      * @param description the task description
-     * @param by the deadline text
+     * @param by the parsed deadline date or date-time
      */
-    public Deadline(String description, String by) {
+    public Deadline(String description, Temporal by) {
         super(TaskType.DEADLINE, description);
         this.by = by;
     }
 
     /**
-     * Returns the deadline text.
+     * Creates an unfinished deadline from user-entered date text.
      *
-     * @return the deadline text
+     * @param description the task description
+     * @param by the deadline text
      */
-    public String getBy() {
+    public Deadline(String description, String by) {
+        this(description, DateTimeParser.parse(by));
+    }
+
+    /**
+     * Returns the parsed deadline value.
+     *
+     * @return the deadline as a {@link java.time.LocalDate} or {@link java.time.LocalDateTime}
+     */
+    public Temporal getBy() {
         return by;
     }
 
@@ -32,6 +44,6 @@ public class Deadline extends Task {
      */
     @Override
     public String toString() {
-        return super.toString() + " (by: " + by + ")";
+        return super.toString() + " (by: " + DateTimeParser.format(by) + ")";
     }
 }
