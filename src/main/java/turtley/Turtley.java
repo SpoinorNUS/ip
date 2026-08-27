@@ -28,7 +28,7 @@ public class Turtley {
     /**
      * Creates Turtley with a supplied save-file location.
      *
-     * @param filePath the save-file path
+     * @param filePath the save-file path.
      */
     public Turtley(String filePath) {
         ui = new Ui();
@@ -67,6 +67,11 @@ public class Turtley {
         keyboard.close();
     }
 
+    /**
+     * Starts Turtley with its default storage location.
+     *
+     * @param args command-line arguments, which are not used.
+     */
     public static void main(String[] args) {
         new Turtley().run();
     }

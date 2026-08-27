@@ -18,20 +18,20 @@ import turtley.model.TaskType;
 import turtley.model.ToDo;
 import turtley.util.DateTimeParser;
 
-//(Written by ChatGPT)
+// Written with AI assistance.
 /**
  * Loads and saves Turtley's task list to the local file system.
  */
 public class Storage {
 
+    private static final int MAX_TASK_NUM = 100;
     private final Path dataFile;
     private final Path tempDataFile;
-    private static final int MAX_TASK_NUM = 100;
 
     /**
      * Creates a storage service for the supplied save-file path.
      *
-     * @param filePath the save-file path
+     * @param filePath the save-file path.
      */
     public Storage(String filePath) {
         if (filePath == null || filePath.isBlank()) {
@@ -44,8 +44,8 @@ public class Storage {
     /**
      * Replaces the saved task list with the supplied tasks.
      *
-     * @param tasks the current task list
-     * @throws TurtleyException if the task list is invalid or cannot be written
+     * @param tasks the current task list.
+     * @throws TurtleyException if the task list is invalid or cannot be written.
      */
     public void save(List<Task> tasks) {
         if (tasks == null) {
@@ -90,8 +90,8 @@ public class Storage {
     /**
      * Reads all saved tasks. A missing save file represents an empty task list.
      *
-     * @return the tasks found in the save file
-     * @throws TurtleyException if the file cannot be read or contains invalid data
+     * @return the tasks found in the save file.
+     * @throws TurtleyException if the file cannot be read or contains invalid data.
      */
     public List<Task> load() {
         try {
@@ -126,10 +126,10 @@ public class Storage {
     /**
      * Converts one save-file line back into a task.
      *
-     * @param line the serialized task line
-     * @param lineNumber the line number used in error messages
-     * @return the reconstructed task
-     * @throws TurtleyException if the line does not match the save format
+     * @param line the serialized task line.
+     * @param lineNumber the line number used in error messages.
+     * @return the reconstructed task.
+     * @throws TurtleyException if the line does not match the save format.
      */
     private static Task deserialize(String line, int lineNumber) {
         List<String> fields = splitFields(line);
@@ -174,8 +174,8 @@ public class Storage {
     /**
      * Splits a record while respecting escaped separators and special characters.
      *
-     * @param line the serialized record
-     * @return the decoded fields
+     * @param line the serialized record.
+     * @return the decoded fields.
      */
     private static List<String> splitFields(String line) {
         List<String> fields = new ArrayList<>();
@@ -212,10 +212,10 @@ public class Storage {
     /**
      * Parses the completion flag stored in a save-file line.
      *
-     * @param status the stored completion flag
-     * @param lineNumber the line number used in error messages
-     * @param line the complete line
-     * @return whether the task is complete
+     * @param status the stored completion flag.
+     * @param lineNumber the line number used in error messages.
+     * @param line the complete line.
+     * @return whether the task is complete.
      */
     private static boolean parseStatus(String status, int lineNumber, String line) {
         if ("1".equals(status)) {
@@ -230,10 +230,10 @@ public class Storage {
     /**
      * Ensures that a required field loaded from disk is present and non-blank.
      *
-     * @param value the field value
-     * @param fieldName the field's human-readable name
-     * @param lineNumber the line number used in error messages
-     * @return the valid field value
+     * @param value the field value.
+     * @param fieldName the field's human-readable name.
+     * @param lineNumber the line number used in error messages.
+     * @return the valid field value.
      */
     private static String requireLoadedField(String value, String fieldName, int lineNumber) {
         if (value == null || value.isBlank()) {
@@ -246,10 +246,10 @@ public class Storage {
     /**
      * Parses a date/time field loaded from disk and adds line context to failures.
      *
-     * @param value the stored date/time text
-     * @param fieldName the field's human-readable name
-     * @param lineNumber the line number used in error messages
-     * @return the parsed date or date-time
+     * @param value the stored date/time text.
+     * @param fieldName the field's human-readable name.
+     * @param lineNumber the line number used in error messages.
+     * @return the parsed date or date-time.
      */
     private static java.time.temporal.Temporal parseDateTime(String value, String fieldName, int lineNumber) {
         try {
@@ -263,9 +263,9 @@ public class Storage {
     /**
      * Creates a consistent exception for malformed save-file entries.
      *
-     * @param lineNumber the malformed line's number
-     * @param line the malformed line
-     * @return the resulting exception
+     * @param lineNumber the malformed line's number.
+     * @param line the malformed line.
+     * @return the resulting exception.
      */
     private static TurtleyException invalidLine(int lineNumber, String line) {
         return new TurtleyException("Invalid task data on line " + lineNumber + ": " + line);
@@ -274,8 +274,8 @@ public class Storage {
     /**
      * Converts a task into the line format used by the save file.
      *
-     * @param task the task to serialize
-     * @return one save-file line for the task
+     * @param task the task to serialize.
+     * @return one save-file line for the task.
      */
     private static String serialize(Task task) {
         if (task == null) {
@@ -320,8 +320,8 @@ public class Storage {
     /**
      * Escapes characters that have a special meaning in the save-file format.
      *
-     * @param value the field value
-     * @return the escaped field value
+     * @param value the field value.
+     * @return the escaped field value.
      */
     private static String escape(String value) {
         return value.replace("\\", "\\\\")
@@ -333,9 +333,9 @@ public class Storage {
     /**
      * Ensures that a required save-file field is present and non-blank.
      *
-     * @param value the field value
-     * @param fieldName the field's human-readable name
-     * @return the valid field value
+     * @param value the field value.
+     * @param fieldName the field's human-readable name.
+     * @return the valid field value.
      */
     private static String requireField(String value, String fieldName) {
         if (value == null || value.isBlank()) {

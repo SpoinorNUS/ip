@@ -154,7 +154,7 @@ class DateTimeParserTest {
     /**
      * Asserts that an input is rejected with the parser's documented error message.
      *
-     * @param value the input to parse
+     * @param value the input to parse.
      */
     private static void assertInvalidDateTime(String value) {
         TurtleyException exception = assertThrows(TurtleyException.class,
@@ -166,7 +166,7 @@ class DateTimeParserTest {
     /**
      * Asserts that a value is rejected by the formatter as an unsupported temporal type.
      *
-     * @param value the value to format
+     * @param value the value to format.
      */
     private static void assertUnsupportedDateTime(java.time.temporal.Temporal value) {
         TurtleyException exception = assertThrows(TurtleyException.class,

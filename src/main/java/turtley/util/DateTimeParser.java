@@ -10,7 +10,7 @@ import java.util.List;
 
 import turtley.exception.TurtleyException;
 
-//(Written by ChatGPT)
+// Written with AI assistance.
 /**
  * Parses and formats the date and date-time values accepted by Turtley.
  */
@@ -49,9 +49,9 @@ public final class DateTimeParser {
     /**
      * Parses a date or date-time value into the most specific Java time type.
      *
-     * @param value the user-entered value
+     * @param value the user-entered value.
      * @return a {@link LocalDateTime} for values containing a time, otherwise a {@link LocalDate}
-     * @throws TurtleyException if the value is blank or does not use a supported format
+     * @throws TurtleyException if the value is blank or does not use a supported format.
      */
     public static Temporal parse(String value) {
         if (value == null || value.isBlank()) {
@@ -79,9 +79,9 @@ public final class DateTimeParser {
     /**
      * Formats a parsed value in the canonical form used by the UI and save file.
      *
-     * @param value the parsed date or date-time value
-     * @return the canonical ISO-like representation
-     * @throws TurtleyException if the value is not a supported Java time type
+     * @param value the parsed date or date-time value.
+     * @return the canonical ISO-like representation.
+     * @throws TurtleyException if the value is not a supported Java time type.
      */
     public static String format(Temporal value) {
         if (value instanceof LocalDateTime dateTime) {
@@ -98,9 +98,9 @@ public final class DateTimeParser {
      * A date-only cutoff includes every value on that calendar date, while a
      * date-time cutoff compares the time as well.
      *
-     * @param value the task date or date-time
-     * @param cutoff the user-supplied cutoff date or date-time
-     * @return {@code true} if the value is on or before the cutoff
+     * @param value the task date or date-time.
+     * @param cutoff the user-supplied cutoff date or date-time.
+     * @return {@code true} if the value is on or before the cutoff.
      */
     public static boolean isOnOrBefore(Temporal value, Temporal cutoff) {
         if (value == null || cutoff == null) {
@@ -121,8 +121,8 @@ public final class DateTimeParser {
     /**
      * Extracts the calendar date from either supported Java time type.
      *
-     * @param value a date or date-time value
-     * @return the calendar date represented by the value
+     * @param value a date or date-time value.
+     * @return the calendar date represented by the value.
      */
     private static LocalDate toLocalDate(Temporal value) {
         if (value instanceof LocalDate date) {
@@ -137,7 +137,7 @@ public final class DateTimeParser {
     /**
      * Creates the consistent user-facing parsing error.
      *
-     * @return the parsing error
+     * @return the parsing error.
      */
     private static TurtleyException invalidDateTime() {
         return new TurtleyException("Invalid date/time format. Use " + SUPPORTED_FORMATS + ".");
@@ -146,8 +146,8 @@ public final class DateTimeParser {
     /**
      * Builds a strict formatter so invalid calendar dates are rejected.
      *
-     * @param pattern the formatter pattern
-     * @return a strict formatter for the pattern
+     * @param pattern the formatter pattern.
+     * @return a strict formatter for the pattern.
      */
     private static DateTimeFormatter formatter(String pattern) {
         return DateTimeFormatter.ofPattern(pattern).withResolverStyle(ResolverStyle.STRICT);

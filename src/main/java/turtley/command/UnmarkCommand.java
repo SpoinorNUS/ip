@@ -15,12 +15,19 @@ public class UnmarkCommand extends IndexedCommand {
     /**
      * Creates an unmark command.
      *
-     * @param input the user-supplied task number
+     * @param input the user-supplied task number.
      */
     public UnmarkCommand(String input) {
         this.input = input;
     }
 
+    /**
+     * Marks the selected task as not done and persists the updated task list.
+     *
+     * @param tasks the application's task list.
+     * @param ui the application's user interface.
+     * @param storage the application's persistence service.
+     */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {
         int taskIndex = requireTaskIndex(input, tasks);

@@ -32,7 +32,7 @@ public class Ui {
     /**
      * Creates a UI that writes to the supplied output stream.
      *
-     * @param output the stream used for user-facing output
+     * @param output the stream used for user-facing output.
      */
     public Ui(PrintStream output) {
         this.output = Objects.requireNonNull(output);
@@ -41,8 +41,8 @@ public class Ui {
     /**
      * Reads one line from the user.
      *
-     * @param keyboard the scanner connected to user input
-     * @return the next input line, or {@code null} when input has ended
+     * @param keyboard the scanner connected to user input.
+     * @return the next input line, or {@code null} when input has ended.
      */
     public String readLine(Scanner keyboard) {
         if (!keyboard.hasNextLine()) {
@@ -74,7 +74,7 @@ public class Ui {
     /**
      * Displays an application error with Turtley's standard formatting.
      *
-     * @param exception the user-facing error
+     * @param exception the user-facing error.
      */
     public void showError(TurtleyException exception) {
         showSeparator();
@@ -94,8 +94,8 @@ public class Ui {
     /**
      * Displays confirmation that a task was added.
      *
-     * @param task the added task
-     * @param taskCount the resulting number of tasks
+     * @param task the added task.
+     * @param taskCount the resulting number of tasks.
      */
     public void showTaskAdded(Task task, int taskCount) {
         showSeparator();
@@ -108,7 +108,7 @@ public class Ui {
     /**
      * Displays all tasks, or the empty-list message when there are none.
      *
-     * @param tasks the tasks to display in list order
+     * @param tasks the tasks to display in list order.
      */
     public void showTaskList(List<Task> tasks) {
         if (tasks.isEmpty()) {
@@ -129,8 +129,8 @@ public class Ui {
     /**
      * Displays one numbered task.
      *
-     * @param index the zero-based task index
-     * @param task the task to display
+     * @param index the zero-based task index.
+     * @param task the task to display.
      */
     public void showTask(int index, Task task) {
         output.println(" " + (index + 1) + "." + task);
@@ -139,7 +139,7 @@ public class Ui {
     /**
      * Displays the header for a timecheck result.
      *
-     * @param cutoffText the formatted cutoff date/time
+     * @param cutoffText the formatted cutoff date/time.
      */
     public void showTimecheckHeader(String cutoffText) {
         showSeparator();
@@ -156,7 +156,7 @@ public class Ui {
     /**
      * Displays confirmation that a task was marked as done.
      *
-     * @param task the completed task
+     * @param task the completed task.
      */
     public void showTaskMarked(Task task) {
         showSeparator();
@@ -168,7 +168,7 @@ public class Ui {
     /**
      * Displays confirmation that a task was marked as not done.
      *
-     * @param task the task whose completion was removed
+     * @param task the task whose completion was removed.
      */
     public void showTaskUnmarked(Task task) {
         showSeparator();
@@ -180,8 +180,8 @@ public class Ui {
     /**
      * Displays confirmation that a task was deleted.
      *
-     * @param task the deleted task
-     * @param taskCount the resulting number of tasks
+     * @param task the deleted task.
+     * @param taskCount the resulting number of tasks.
      */
     public void showTaskDeleted(Task task, int taskCount) {
         showSeparator();

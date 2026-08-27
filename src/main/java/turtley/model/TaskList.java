@@ -23,7 +23,7 @@ public class TaskList {
     /**
      * Creates a task list containing the supplied tasks.
      *
-     * @param initialTasks tasks loaded from storage
+     * @param initialTasks tasks loaded from storage.
      */
     public TaskList(List<Task> initialTasks) {
         addAll(initialTasks);
@@ -32,7 +32,7 @@ public class TaskList {
     /**
      * Returns whether this list has reached its supported capacity.
      *
-     * @return {@code true} when the list contains 100 tasks
+     * @return {@code true} when the list contains 100 tasks.
      */
     public boolean isFull() {
         return tasks.size() >= MAX_TASK_NUM;
@@ -41,7 +41,7 @@ public class TaskList {
     /**
      * Returns the number of tasks currently stored.
      *
-     * @return the task count
+     * @return the task count.
      */
     public int size() {
         return tasks.size();
@@ -50,7 +50,7 @@ public class TaskList {
     /**
      * Returns whether this list has no tasks.
      *
-     * @return {@code true} when the list is empty
+     * @return {@code true} when the list is empty.
      */
     public boolean isEmpty() {
         return tasks.isEmpty();
@@ -59,8 +59,8 @@ public class TaskList {
     /**
      * Returns the task at the supplied zero-based index.
      *
-     * @param index the zero-based task index
-     * @return the task at that index
+     * @param index the zero-based task index.
+     * @return the task at that index.
      */
     public Task get(int index) {
         return tasks.get(index);
@@ -69,8 +69,8 @@ public class TaskList {
     /**
      * Adds a task to the end of the list.
      *
-     * @param task the task to add
-     * @throws TurtleyException if the list is full or the task is null
+     * @param task the task to add.
+     * @throws TurtleyException if the list is full or the task is null.
      */
     public void add(Task task) {
         if (task == null) {
@@ -85,8 +85,8 @@ public class TaskList {
     /**
      * Adds all supplied tasks to the end of the list.
      *
-     * @param newTasks the tasks to add
-     * @throws TurtleyException if the tasks are null, contain null, or exceed capacity
+     * @param newTasks the tasks to add.
+     * @throws TurtleyException if the tasks are null, contain null, or exceed capacity.
      */
     public void addAll(List<Task> newTasks) {
         if (newTasks == null || newTasks.stream().anyMatch(task -> task == null)) {
@@ -101,8 +101,8 @@ public class TaskList {
     /**
      * Removes and returns the task at the supplied zero-based index.
      *
-     * @param index the zero-based task index
-     * @return the removed task
+     * @param index the zero-based task index.
+     * @return the removed task.
      */
     public Task remove(int index) {
         return tasks.remove(index);
@@ -111,8 +111,8 @@ public class TaskList {
     /**
      * Inserts a task at the supplied zero-based index.
      *
-     * @param index the insertion index
-     * @param task the task to insert
+     * @param index the insertion index.
+     * @param task the task to insert.
      */
     public void add(int index, Task task) {
         if (task == null) {
@@ -127,7 +127,7 @@ public class TaskList {
     /**
      * Provides a read-only view for collaborators such as Storage.
      *
-     * @return an unmodifiable view of the tasks
+     * @return an unmodifiable view of the tasks.
      */
     public List<Task> asList() {
         return Collections.unmodifiableList(tasks);

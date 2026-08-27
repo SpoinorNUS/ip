@@ -15,9 +15,9 @@ public class Event extends Task {
     /**
      * Creates an unfinished event.
      *
-     * @param description the event description
-     * @param from the parsed event start date or date-time
-     * @param to the parsed event end date or date-time
+     * @param description the event description.
+     * @param from the parsed event start date or date-time.
+     * @param to the parsed event end date or date-time.
      */
     public Event(String description, Temporal from, Temporal to) {
         super(TaskType.EVENT, description);
@@ -28,9 +28,9 @@ public class Event extends Task {
     /**
      * Creates an unfinished event from user-entered date/time text.
      *
-     * @param description the event description
-     * @param from the event start text
-     * @param to the event end text
+     * @param description the event description.
+     * @param from the event start text.
+     * @param to the event end text.
      */
     public Event(String description, String from, String to) {
         this(description, DateTimeParser.parse(from), DateTimeParser.parse(to));
@@ -57,7 +57,7 @@ public class Event extends Task {
     /**
      * Returns the display form including the event time range.
      *
-     * @return the formatted event
+     * @return the formatted event.
      */
     @Override
     public String toString() {
