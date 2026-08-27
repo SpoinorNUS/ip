@@ -80,6 +80,47 @@ public final class DateTimeParser {
     }
 
     /**
+     * Checks whether a task date/time occurs on or before a supplied cutoff.
+     * A date-only cutoff includes every value on that calendar date, while a
+     * date-time cutoff compares the time as well.
+     *
+     * @param value the task date or date-time
+     * @param cutoff the user-supplied cutoff date or date-time
+     * @return {@code true} if the value is on or before the cutoff
+     */
+    public static boolean isOnOrBefore(Temporal value, Temporal cutoff) {
+        if (value == null || cutoff == null) {
+            return false;
+        }
+        if (cutoff instanceof LocalDate cutoffDate) {
+            return toLocalDate(value).compareTo(cutoffDate) <= 0;
+        }
+        if (cutoff instanceof LocalDateTime cutoffDateTime) {
+            LocalDateTime valueDateTime = value instanceof LocalDate date
+                    ? date.atStartOfDay()
+                    : (LocalDateTime) value;
+            return !valueDateTime.isAfter(cutoffDateTime);
+        }
+        throw new TurtleyException("Unable to compare an unsupported date/time value.");
+    }
+
+    /**
+     * Extracts the calendar date from either supported Java time type.
+     *
+     * @param value a date or date-time value
+     * @return the calendar date represented by the value
+     */
+    private static LocalDate toLocalDate(Temporal value) {
+        if (value instanceof LocalDate date) {
+            return date;
+        }
+        if (value instanceof LocalDateTime dateTime) {
+            return dateTime.toLocalDate();
+        }
+        throw new TurtleyException("Unable to compare an unsupported date/time value.");
+    }
+
+    /**
      * Creates the consistent user-facing parsing error.
      *
      * @return the parsing error

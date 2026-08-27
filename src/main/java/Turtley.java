@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.time.temporal.Temporal;
 
 public class Turtley {
 
@@ -135,6 +136,41 @@ public class Turtley {
             System.out.println(" " + (i + 1) + "." + taskList.get(i));
         }
         System.out.println(SEPARATOR);
+    }
+
+    //(Written by ChatGPT)
+    /**
+     * Lists deadlines and events whose relevant date/time is on or before the cutoff.
+     * For events, the start date/time determines when the event takes place.
+     *
+     * @param input the date/time entered after {@code timecheck}
+     */
+    public static void timecheck(String input) {
+        try {
+            Temporal cutoff = DateTimeParser.parse(input);
+            String cutoffText = DateTimeParser.format(cutoff);
+            boolean hasMatchingTask = false;
+
+            System.out.println(SEPARATOR);
+            System.out.println(" Here are the deadline and event tasks on or before " + cutoffText + ":");
+            for (int i = 0; i < taskList.size(); i++) {
+                Task task = taskList.get(i);
+                boolean isDeadline = task instanceof Deadline deadline
+                        && DateTimeParser.isOnOrBefore(deadline.getBy(), cutoff);
+                boolean isEvent = task instanceof Event event
+                        && DateTimeParser.isOnOrBefore(event.getFrom(), cutoff);
+                if (isDeadline || isEvent) {
+                    hasMatchingTask = true;
+                    System.out.println(" " + (i + 1) + "." + task);
+                }
+            }
+            if (!hasMatchingTask) {
+                System.out.println("None! o/T\\>");
+            }
+            System.out.println(SEPARATOR);
+        } catch (TurtleyException exception) {
+            showError(exception);
+        }
     }
 
     //Marks the task at the given one-based list index as done. (Written by ChatGPT)
@@ -285,6 +321,8 @@ public class Turtley {
                     unmark(input.substring(7).trim());
                 } else if (input.equals("delete") || input.startsWith("delete ")) {
                     delete(input.length() == 6 ? "" : input.substring(7).trim());
+                } else if (input.equals("timecheck") || input.startsWith("timecheck ")) {
+                    timecheck(input.substring("timecheck".length()).trim());
                 } else if (input.equals("todo") || input.startsWith("todo ")) {
                     String description = input.length() == 4 ? "" : input.substring(5).trim();
                     add(TaskType.TODO, description);
