@@ -1,16 +1,23 @@
+package turtley.command;
+
+import turtley.model.Task;
+import turtley.model.TaskList;
+import turtley.storage.Storage;
+import turtley.ui.Ui;
+
 /**
- * Marks one task as done.
+ * Marks one task as not done.
  */
-public class MarkCommand extends IndexedCommand {
+public class UnmarkCommand extends IndexedCommand {
 
     private final String input;
 
     /**
-     * Creates a mark command.
+     * Creates an unmark command.
      *
      * @param input the user-supplied task number
      */
-    public MarkCommand(String input) {
+    public UnmarkCommand(String input) {
         this.input = input;
     }
 
@@ -19,12 +26,12 @@ public class MarkCommand extends IndexedCommand {
         int taskIndex = requireTaskIndex(input, tasks);
         Task task = tasks.get(taskIndex);
         boolean wasDone = task.isDone();
-        task.markAsDone();
+        task.markAsNotDone();
         saveOrRollback(tasks, storage, () -> {
-            if (!wasDone) {
-                task.markAsNotDone();
+            if (wasDone) {
+                task.markAsDone();
             }
         });
-        ui.showTaskMarked(task);
+        ui.showTaskUnmarked(task);
     }
 }

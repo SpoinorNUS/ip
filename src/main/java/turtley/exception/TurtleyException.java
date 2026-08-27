@@ -1,3 +1,5 @@
+package turtley.exception;
+
 /**
  * Represents an expected, user-facing error in Turtley.
  */

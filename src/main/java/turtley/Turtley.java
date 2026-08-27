@@ -1,4 +1,13 @@
+package turtley;
+
 import java.util.Scanner;
+
+import turtley.command.Command;
+import turtley.command.Parser;
+import turtley.exception.TurtleyException;
+import turtley.model.TaskList;
+import turtley.storage.Storage;
+import turtley.ui.Ui;
 
 /**
  * Coordinates Turtley's application components.

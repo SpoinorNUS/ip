@@ -1,3 +1,10 @@
+package turtley.command;
+
+import turtley.exception.TurtleyException;
+import turtley.model.Deadline;
+import turtley.model.Task;
+import turtley.util.DateTimeParser;
+
 /**
  * Adds a deadline task.
  */

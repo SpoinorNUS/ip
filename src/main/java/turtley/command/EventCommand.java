@@ -1,3 +1,10 @@
+package turtley.command;
+
+import turtley.exception.TurtleyException;
+import turtley.model.Event;
+import turtley.model.Task;
+import turtley.util.DateTimeParser;
+
 /**
  * Adds an event task.
  */

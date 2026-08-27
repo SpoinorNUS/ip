@@ -1,3 +1,5 @@
+package turtley.model;
+
 /**
  * Represents a general task in Turtley's task list.
  */
