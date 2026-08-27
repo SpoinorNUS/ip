@@ -24,6 +24,13 @@ Unless the user says otherwise, assume that you are assisting a student working 
 
 # Project-specific requirements
 
+## JUnit coverage target
+
+Maintain JUnit tests for at least the highest-value 50% of methods, prioritizing
+complex, core, or critical business logic. After every code change, update the
+relevant JUnit tests so they remain aligned with the changed behavior and the
+test suite continues to satisfy this coverage target.
+
 ## Post-code-update verification
 
 After every code update:
