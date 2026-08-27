@@ -19,6 +19,11 @@ public class TodoCommand extends AddCommand {
         this.description = description;
     }
 
+    /**
+     * Creates a to-do task from the supplied description.
+     *
+     * @return the new to-do task
+     */
     @Override
     protected Task createTask() {
         return new ToDo(description);
