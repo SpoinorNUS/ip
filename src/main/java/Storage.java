@@ -14,12 +14,21 @@ import java.util.List;
  */
 public class Storage {
 
-    private static final Path DATA_FILE = Path.of("data", "turtley.txt");
-    private static final Path TEMP_DATA_FILE = Path.of("data", "turtley.txt.tmp");
+    private final Path dataFile;
+    private final Path tempDataFile;
     private static final int MAX_TASK_NUM = 100;
 
-    private Storage() {
-        // Utility class; do not create instances.
+    /**
+     * Creates a storage service for the supplied save-file path.
+     *
+     * @param filePath the save-file path
+     */
+    public Storage(String filePath) {
+        if (filePath == null || filePath.isBlank()) {
+            throw new TurtleyException("Unable to use an empty save-file path.");
+        }
+        dataFile = Path.of(filePath);
+        tempDataFile = Path.of(filePath + ".tmp");
     }
 
     /**
@@ -28,7 +37,7 @@ public class Storage {
      * @param tasks the current task list
      * @throws TurtleyException if the task list is invalid or cannot be written
      */
-    public static void save(List<Task> tasks) {
+    public void save(List<Task> tasks) {
         if (tasks == null) {
             throw new TurtleyException("Unable to save tasks: task list is null.");
         }
@@ -45,19 +54,22 @@ public class Storage {
         }
 
         try {
-            Files.createDirectories(DATA_FILE.getParent());
+            Path parent = dataFile.getParent();
+            if (parent != null) {
+                Files.createDirectories(parent);
+            }
             if (tasks.isEmpty()) {
-                Files.deleteIfExists(DATA_FILE);
+                Files.deleteIfExists(dataFile);
                 return;
             }
-            Files.writeString(TEMP_DATA_FILE, fileContents.toString(), StandardCharsets.UTF_8,
+            Files.writeString(tempDataFile, fileContents.toString(), StandardCharsets.UTF_8,
                     StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
-            Files.move(TEMP_DATA_FILE, DATA_FILE, StandardCopyOption.REPLACE_EXISTING);
+            Files.move(tempDataFile, dataFile, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException | SecurityException exception) {
             throw new TurtleyException("Unable to save tasks to disk.", exception);
         } finally {
             try {
-                Files.deleteIfExists(TEMP_DATA_FILE);
+                Files.deleteIfExists(tempDataFile);
             } catch (IOException | SecurityException ignored) {
                 // The next save overwrites the temporary file if cleanup is unavailable.
             }
@@ -71,17 +83,17 @@ public class Storage {
      * @return the tasks found in the save file
      * @throws TurtleyException if the file cannot be read or contains invalid data
      */
-    public static List<Task> load() {
+    public List<Task> load() {
         try {
-            if (Files.notExists(DATA_FILE)) {
+            if (Files.notExists(dataFile)) {
                 return new ArrayList<>();
             }
-            if (!Files.isRegularFile(DATA_FILE)) {
+            if (!Files.isRegularFile(dataFile)) {
                 throw new TurtleyException("Unable to load tasks from disk: save path is not a file.");
             }
 
             List<Task> tasks = new ArrayList<>();
-            try (BufferedReader reader = Files.newBufferedReader(DATA_FILE, StandardCharsets.UTF_8)) {
+            try (BufferedReader reader = Files.newBufferedReader(dataFile, StandardCharsets.UTF_8)) {
                 String line;
                 int lineNumber = 0;
                 while ((line = reader.readLine()) != null) {

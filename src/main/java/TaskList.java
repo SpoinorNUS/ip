@@ -11,6 +11,21 @@ public class TaskList {
     private final List<Task> tasks = new ArrayList<>();
 
     /**
+     * Creates an empty task list.
+     */
+    public TaskList() {
+    }
+
+    /**
+     * Creates a task list containing the supplied tasks.
+     *
+     * @param initialTasks tasks loaded from storage
+     */
+    public TaskList(List<Task> initialTasks) {
+        addAll(initialTasks);
+    }
+
+    /**
      * Returns whether this list has reached its supported capacity.
      *
      * @return {@code true} when the list contains 100 tasks
