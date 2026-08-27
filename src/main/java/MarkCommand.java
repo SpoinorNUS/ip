@@ -1,0 +1,30 @@
+/**
+ * Marks one task as done.
+ */
+public class MarkCommand extends IndexedCommand {
+
+    private final String input;
+
+    /**
+     * Creates a mark command.
+     *
+     * @param input the user-supplied task number
+     */
+    public MarkCommand(String input) {
+        this.input = input;
+    }
+
+    @Override
+    public void execute(TaskList tasks, Ui ui, Storage storage) {
+        int taskIndex = requireTaskIndex(input, tasks);
+        Task task = tasks.get(taskIndex);
+        boolean wasDone = task.isDone();
+        task.markAsDone();
+        saveOrRollback(tasks, storage, () -> {
+            if (!wasDone) {
+                task.markAsNotDone();
+            }
+        });
+        ui.showTaskMarked(task);
+    }
+}

@@ -1,376 +1,64 @@
-import java.util.ArrayList;
 import java.util.Scanner;
-import java.time.temporal.Temporal;
 
+/**
+ * Coordinates Turtley's application components.
+ */
 public class Turtley {
 
-    private static final String SEPARATOR = "____________________________________________________________";
-    private static final int MAX_TASK_NUM = 100;
-    private static final ArrayList<Task> taskList = new ArrayList<>();
+    private final Storage storage;
+    private final TaskList tasks;
+    private final Ui ui;
 
     /**
-     * Saves the current list and reports persistence errors without terminating the chatbot.
-     *
-     * @return {@code true} if the list was saved successfully
+     * Creates Turtley with the default save-file location.
      */
-    private static boolean saveTaskList() {
+    public Turtley() {
+        this("data/turtley.txt");
+    }
+
+    /**
+     * Creates Turtley with a supplied save-file location.
+     *
+     * @param filePath the save-file path
+     */
+    public Turtley(String filePath) {
+        ui = new Ui();
+        storage = new Storage(filePath);
+        TaskList loadedTasks;
         try {
-            Storage.save(taskList);
-            return true;
+            loadedTasks = new TaskList(storage.load());
         } catch (TurtleyException exception) {
-            showError(exception);
-            return false;
+            ui.showError(exception);
+            loadedTasks = new TaskList();
         }
+        tasks = loadedTasks;
     }
 
-    //Adds a task object to the task list.
-    public static void add(Task newTask) {
-        if (newTask == null) {
-            showError(new TurtleyException("Cannot add a null task."));
-            return;
-        }
-        if (taskList.size() >= MAX_TASK_NUM) {
-            System.out.println(SEPARATOR);
-            System.out.println("Task list full, do some work you lazy bum! o/T\\>");
-            System.out.println(SEPARATOR);
-            return;
-        }
-        taskList.add(newTask);
-        if (!saveTaskList()) {
-            taskList.remove(taskList.size() - 1);
-            return;
-        }
-        System.out.println(SEPARATOR);
-        System.out.println("Got it. I've added this task:");
-        System.out.println("  " + newTask);
-        System.out.println("Now you have " + taskList.size() + " tasks in the list.");
-        System.out.println(SEPARATOR);
-    }
+    /**
+     * Runs the command loop until the user exits or input ends.
+     */
+    public void run() {
+        ui.showWelcome();
+        boolean running = true;
+        Scanner keyboard = new Scanner(System.in);
+        while (running) {
+            String input = ui.readLine(keyboard);
+            if (input == null) {
+                break;
+            }
 
-    //Adds a task using its enum-based type.
-    public static void add(TaskType taskType, String input) {
-        if (taskType == null) {
-            showError(new TurtleyException("Cannot add a task with an invalid type."));
-            return;
-        }
-        if (taskType == TaskType.TODO) {
+            Command command = Parser.parse(input);
             try {
-                add(new ToDo(input));
+                command.execute(tasks, ui, storage);
             } catch (TurtleyException exception) {
-                showError(exception);
+                ui.showError(exception);
             }
-        } else {
-            add(new Task(taskType, input));
+            running = !command.isExit();
         }
-    }
-
-    //Parses and adds a deadline command's description and /by field. (Written by ChatGPT)
-    private static void addDeadline(String input) {
-        int byIndex = input.indexOf(" /by ");
-        if (byIndex <= 0 || byIndex + 5 >= input.length()) {
-            showInvalidTaskFormat("deadline <description> /by <date>");
-            return;
-        }
-
-        String description = input.substring(0, byIndex).trim();
-        String by = input.substring(byIndex + 5).trim();
-        if (description.isEmpty() || by.isEmpty()) {
-            showInvalidTaskFormat("deadline <description> /by <date>");
-            return;
-        }
-        try {
-            add(new Deadline(description, DateTimeParser.parse(by)));
-        } catch (TurtleyException exception) {
-            showError(exception);
-        }
-    }
-
-    //Parses and adds an event command's description, /from field, and /to field. (Written by ChatGPT)
-    private static void addEvent(String input) {
-        int fromIndex = input.indexOf(" /from ");
-        int toIndex = fromIndex < 0 ? -1 : input.indexOf(" /to ", fromIndex + 6);
-        if (fromIndex <= 0 || toIndex <= fromIndex + 6 || toIndex + 5 >= input.length()) {
-            showInvalidTaskFormat("event <description> /from <start> /to <end>");
-            return;
-        }
-
-        String description = input.substring(0, fromIndex).trim();
-        String from = input.substring(fromIndex + 6, toIndex).trim();
-        String to = input.substring(toIndex + 5).trim();
-        if (description.isEmpty() || from.isEmpty() || to.isEmpty()) {
-            showInvalidTaskFormat("event <description> /from <start> /to <end>");
-            return;
-        }
-        try {
-            add(new Event(description, DateTimeParser.parse(from), DateTimeParser.parse(to)));
-        } catch (TurtleyException exception) {
-            showError(exception);
-        }
-    }
-
-    //Prints a helpful message when a structured task command is malformed.(Written by ChatGPT)
-    private static void showInvalidTaskFormat(String format) {
-        showError(new TurtleyException("Invalid format. Use: " + format));
-    }
-
-    //Prints a user-facing error while keeping the Turtley prompt suffix consistent.
-    private static void showError(TurtleyException exception) {
-        System.out.println(SEPARATOR);
-        System.out.println(" " + exception.getMessage() + " o/T\\>");
-        System.out.println(SEPARATOR);
-    }
-
-    //Reads from the taskList
-    public static void list() {
-        if (taskList.isEmpty()) {
-            System.out.println(SEPARATOR);
-            System.out.println("Task list empty. Good job! Here's a cookie. o/T\\>");
-            System.out.println(SEPARATOR);
-            return;
-        }
-
-        //Print out list display
-        System.out.println(SEPARATOR);
-        System.out.println(" Here are the tasks in your list:");
-        for (int i = 0; i < taskList.size(); i++) {
-            System.out.println(" " + (i + 1) + "." + taskList.get(i));
-        }
-        System.out.println(SEPARATOR);
-    }
-
-    //(Written by ChatGPT)
-    /**
-     * Lists deadlines and events whose relevant date/time is on or before the cutoff.
-     * For events, the start date/time determines when the event takes place.
-     *
-     * @param input the date/time entered after {@code timecheck}
-     */
-    public static void timecheck(String input) {
-        try {
-            Temporal cutoff = DateTimeParser.parse(input);
-            String cutoffText = DateTimeParser.format(cutoff);
-            boolean hasMatchingTask = false;
-
-            System.out.println(SEPARATOR);
-            System.out.println(" Here are the deadline and event tasks on or before " + cutoffText + ":");
-            for (int i = 0; i < taskList.size(); i++) {
-                Task task = taskList.get(i);
-                boolean isDeadline = task instanceof Deadline deadline
-                        && DateTimeParser.isOnOrBefore(deadline.getBy(), cutoff);
-                boolean isEvent = task instanceof Event event
-                        && DateTimeParser.isOnOrBefore(event.getFrom(), cutoff);
-                if (isDeadline || isEvent) {
-                    hasMatchingTask = true;
-                    System.out.println(" " + (i + 1) + "." + task);
-                }
-            }
-            if (!hasMatchingTask) {
-                System.out.println("None! o/T\\>");
-            }
-            System.out.println(SEPARATOR);
-        } catch (TurtleyException exception) {
-            showError(exception);
-        }
-    }
-
-    //Marks the task at the given one-based list index as done. (Written by ChatGPT)
-    public static void mark(String input) {
-        try {
-            int taskIndex = parseTaskIndex(input);
-            if (taskIndex < 0 || taskIndex >= taskList.size()) {
-                throw new TurtleyException("Task number is not in your list.");
-            }
-
-            Task task = taskList.get(taskIndex);
-            boolean wasDone = task.isDone();
-            task.markAsDone();
-            if (!saveTaskList()) {
-                if (!wasDone) {
-                    task.markAsNotDone();
-                }
-                return;
-            }
-            System.out.println(SEPARATOR);
-            System.out.println(" Nice! I've marked this task as done:");
-            System.out.println("   [" + taskList.get(taskIndex).getStatusIcon() + "] "
-                    + taskList.get(taskIndex).getDescription());
-            System.out.println(SEPARATOR);
-        } catch (TurtleyException exception) {
-            showError(exception);
-        }
-    }
-
-    //Marks the task at the given one-based list index as not done. (Written by ChatGPT)
-    public static void unmark(String input) {
-        try {
-            int taskIndex = parseTaskIndex(input);
-            if (taskIndex < 0 || taskIndex >= taskList.size()) {
-                throw new TurtleyException("Task number is not in your list.");
-            }
-
-            Task task = taskList.get(taskIndex);
-            boolean wasDone = task.isDone();
-            task.markAsNotDone();
-            if (!saveTaskList()) {
-                if (wasDone) {
-                    task.markAsDone();
-                }
-                return;
-            }
-            System.out.println(SEPARATOR);
-            System.out.println(" OK, I've marked this task as not done yet:");
-            System.out.println("   [" + taskList.get(taskIndex).getStatusIcon() + "] "
-                    + taskList.get(taskIndex).getDescription());
-            System.out.println(SEPARATOR);
-        } catch (TurtleyException exception) {
-            showError(exception);
-        }
-    }
-
-    /**
-     * Deletes the task at the given one-based list index.
-     *
-     * @param input the task number entered by the user
-     */ //(Written by ChatGPT)
-    public static void delete(String input) {
-        try {
-            int taskIndex = parseTaskIndex(input);
-            if (taskIndex < 0 || taskIndex >= taskList.size()) {
-                throw new TurtleyException("Task number is not in your list.");
-            }
-
-            Task deletedTask = taskList.remove(taskIndex);
-            if (!saveTaskList()) {
-                taskList.add(taskIndex, deletedTask);
-                return;
-            }
-            System.out.println(SEPARATOR);
-            System.out.println(" Noted. I've removed this task:");
-            System.out.println("   " + deletedTask);
-            System.out.println(" Now you have " + taskList.size() + " tasks in the list.");
-            System.out.println(SEPARATOR);
-        } catch (TurtleyException exception) {
-            showError(exception);
-        }
-    }
-
-    /**
-     * Parses a one-based task number into the zero-based index used internally.
-     *
-     * @param input the task number entered by the user
-     * @return the corresponding zero-based task index
-     * @throws TurtleyException if the input is not a valid integer
-     */
-    private static int parseTaskIndex(String input) {
-        if (input == null || input.isEmpty()) {
-            throw new TurtleyException("Please provide a valid task number.");
-        }
-
-        int sign = 1;
-        int digitStart = 0;
-        char firstCharacter = input.charAt(0);
-        if (firstCharacter == '-' || firstCharacter == '+') {
-            sign = firstCharacter == '-' ? -1 : 1;
-            digitStart = 1;
-        }
-        if (digitStart == input.length()) {
-            throw new TurtleyException("Please provide a valid task number.");
-        }
-
-        long maximumAbsoluteValue = sign < 0 ? 2_147_483_648L : Integer.MAX_VALUE;
-        long absoluteValue = 0;
-        for (int i = digitStart; i < input.length(); i++) {
-            char currentCharacter = input.charAt(i);
-            if (currentCharacter < '0' || currentCharacter > '9') {
-                throw new TurtleyException("Please provide a valid task number.");
-            }
-            int digit = currentCharacter - '0';
-            if (absoluteValue > (maximumAbsoluteValue - digit) / 10) {
-                throw new TurtleyException("Please provide a valid task number.");
-            }
-            absoluteValue = absoluteValue * 10 + digit;
-        }
-
-        return (int) (sign * absoluteValue) - 1;
-    }
-
-    //Terminates the app
-    public static void bye() {
-        System.out.println(SEPARATOR);
-        System.out.println("Bye. See you around! o/T\\>");
-        System.out.println(SEPARATOR);
-    }
-
-    //Waits for input from the user
-    public static boolean prompt(Scanner keyboard) {
-        //Line 21-24 written by ChatGPT (I genuinely think this is unnecessary though)
-        if (!keyboard.hasNextLine()) {
-            return false;
-        }
-        String input = keyboard.nextLine();
-        switch (input) {
-            case "" -> {System.out.println("Please input something. o/T\\>");
-                        System.out.println(SEPARATOR);
-                        return true;}
-            case "bye" -> {bye(); return false;}
-            case "list" -> {list(); return true;}
-            default -> {
-                if (input.startsWith("mark ")) { //(Written by ChatGPT)
-                    mark(input.substring(5).trim());
-                } else if (input.startsWith("unmark ")) { //(Written by ChatGPT)
-                    unmark(input.substring(7).trim());
-                } else if (input.equals("delete") || input.startsWith("delete ")) {
-                    delete(input.length() == 6 ? "" : input.substring(7).trim());
-                } else if (input.equals("timecheck") || input.startsWith("timecheck ")) {
-                    timecheck(input.substring("timecheck".length()).trim());
-                } else if (input.equals("todo") || input.startsWith("todo ")) {
-                    String description = input.length() == 4 ? "" : input.substring(5).trim();
-                    add(TaskType.TODO, description);
-                } else if (input.startsWith("deadline ")) {
-                    addDeadline(input.substring(9).trim());
-                } else if (input.startsWith("event ")) {
-                    addEvent(input.substring(6).trim());
-                } else {
-                    System.out.println("Please input something correct. o/T\\>");
-                    System.out.println(SEPARATOR);
-                }
-                return true;
-            }
-        }
+        keyboard.close();
     }
 
     public static void main(String[] args) {
-        //Turtley ASCII art was by me.
-        String banner = "      _____________ \n"
-                + "__   /__|_______|__\\ \n"
-                + "\\^ \\/______|_|______\\\n"
-                + " \\ /_______|_|_______\\>\n"
-                + "   |_/ |_/     \\_| \\_|\n Turtley";
-
-        //Line 11-17 was written by ChatGPT.
-        System.out.println(SEPARATOR);
-        System.out.println(banner);
-        System.out.println("Hello! I'm Turtley.");
-        System.out.println("What can I do for you? o/T\\>");
-        System.out.println(SEPARATOR);
-
-        try {
-            taskList.addAll(StorageReader.load());
-        } catch (TurtleyException exception) {
-            showError(exception);
-        }
-
-        //running variable is true when the application is running
-        boolean running = true;
-
-        //Initialise Scanner of user inputs
-        Scanner keyboard = new Scanner(System.in);
-
-        //Keep prompting the user while app is running
-        while (running) {
-            running = prompt(keyboard);
-        }
-        //Close the Scanner once done
-        keyboard.close();
+        new Turtley().run();
     }
 }
