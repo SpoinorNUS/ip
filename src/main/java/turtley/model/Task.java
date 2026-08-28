@@ -12,7 +12,7 @@ public class Task {
     /**
      * Creates an unfinished task with the given description.
      *
-     * @param description the task description
+     * @param description the task description.
      */
     public Task(String description) {
         this(TaskType.TODO, description);
@@ -21,8 +21,8 @@ public class Task {
     /**
      * Creates a task with a caller-supplied type.
      *
-     * @param taskType the task type
-     * @param description the task description
+     * @param taskType the task type.
+     * @param description the task description.
      */
     public Task(TaskType taskType, String description) {
         this.taskType = taskType;
@@ -33,7 +33,7 @@ public class Task {
     /**
      * Returns this task's type.
      *
-     * @return the task type
+     * @return the task type.
      */
     public TaskType getTaskType() {
         return taskType;
@@ -42,7 +42,7 @@ public class Task {
     /**
      * Returns this task's type icon.
      *
-     * @return the task type icon
+     * @return the task type icon.
      */
     public String getTypeIcon() {
         return switch (taskType) {
@@ -55,7 +55,7 @@ public class Task {
     /**
      * Returns the symbol used to display this task's completion status.
      *
-     * @return {@code X} for a completed task, or a space otherwise
+     * @return {@code X} for a completed task, or a space otherwise.
      */
     public String getStatusIcon() {
         return isDone ? "X" : " ";
@@ -64,7 +64,7 @@ public class Task {
     /**
      * Returns whether this task has been completed.
      *
-     * @return {@code true} if the task is done
+     * @return {@code true} if the task is done.
      */
     public boolean isDone() {
         return isDone;
@@ -87,7 +87,7 @@ public class Task {
     /**
      * Returns this task's description.
      *
-     * @return the task description
+     * @return the task description.
      */
     public String getDescription() {
         return description;
@@ -96,7 +96,7 @@ public class Task {
     /**
      * Returns the display form of this task.
      *
-     * @return the type icon, status icon, and description
+     * @return the type icon, status icon, and description.
      */
     @Override
     public String toString() {

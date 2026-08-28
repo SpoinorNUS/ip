@@ -15,7 +15,7 @@ public class EventCommand extends AddCommand {
     /**
      * Creates an event command.
      *
-     * @param input the description and event time range
+     * @param input the description and event time range.
      */
     public EventCommand(String input) {
         this.input = input;
@@ -24,8 +24,8 @@ public class EventCommand extends AddCommand {
     /**
      * Parses the command input into an event task.
      *
-     * @return the parsed event task
-     * @throws TurtleyException if the input does not contain a description and time range
+     * @return the parsed event task.
+     * @throws TurtleyException if the input does not contain a description and time range.
      */
     @Override
     protected Task createTask() {
@@ -47,7 +47,7 @@ public class EventCommand extends AddCommand {
     /**
      * Creates the standard error for malformed event commands.
      *
-     * @return the event format error
+     * @return the event format error.
      */
     private TurtleyException invalidFormat() {
         return new TurtleyException("Invalid format. Use: event <description> /from <start> /to <end>");

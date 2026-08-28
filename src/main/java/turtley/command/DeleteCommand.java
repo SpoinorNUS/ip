@@ -15,7 +15,7 @@ public class DeleteCommand extends IndexedCommand {
     /**
      * Creates a delete command.
      *
-     * @param input the user-supplied task number
+     * @param input the user-supplied task number.
      */
     public DeleteCommand(String input) {
         this.input = input;
@@ -24,9 +24,9 @@ public class DeleteCommand extends IndexedCommand {
     /**
      * Removes the selected task and persists the updated task list.
      *
-     * @param tasks the application's task list
-     * @param ui the application's user interface
-     * @param storage the application's persistence service
+     * @param tasks the application's task list.
+     * @param ui the application's user interface.
+     * @param storage the application's persistence service.
      */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {

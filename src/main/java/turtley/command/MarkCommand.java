@@ -15,7 +15,7 @@ public class MarkCommand extends IndexedCommand {
     /**
      * Creates a mark command.
      *
-     * @param input the user-supplied task number
+     * @param input the user-supplied task number.
      */
     public MarkCommand(String input) {
         this.input = input;
@@ -24,9 +24,9 @@ public class MarkCommand extends IndexedCommand {
     /**
      * Marks the selected task as done and persists the updated task list.
      *
-     * @param tasks the application's task list
-     * @param ui the application's user interface
-     * @param storage the application's persistence service
+     * @param tasks the application's task list.
+     * @param ui the application's user interface.
+     * @param storage the application's persistence service.
      */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {

@@ -12,9 +12,9 @@ public class ExitCommand extends Command {
     /**
      * Displays the normal shutdown message.
      *
-     * @param tasks the application's task list, which is not modified
-     * @param ui the application's user interface
-     * @param storage the application's persistence service, which is not used
+     * @param tasks the application's task list, which is not modified.
+     * @param ui the application's user interface.
+     * @param storage the application's persistence service, which is not used.
      */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {

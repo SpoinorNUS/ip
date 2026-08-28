@@ -20,7 +20,7 @@ public class TimecheckCommand extends Command {
     /**
      * Creates a timecheck command.
      *
-     * @param input the cutoff date/time
+     * @param input the cutoff date/time.
      */
     public TimecheckCommand(String input) {
         this.input = input;
@@ -29,9 +29,9 @@ public class TimecheckCommand extends Command {
     /**
      * Displays tasks whose deadline or event start is on or before the cutoff.
      *
-     * @param tasks the application's task list
-     * @param ui the application's user interface
-     * @param storage the application's persistence service, which is not used
+     * @param tasks the application's task list.
+     * @param ui the application's user interface.
+     * @param storage the application's persistence service, which is not used.
      */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {

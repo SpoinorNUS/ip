@@ -13,16 +13,16 @@ public abstract class AddCommand extends Command {
     /**
      * Creates the task represented by this command.
      *
-     * @return the new task
+     * @return the new task.
      */
     protected abstract Task createTask();
 
     /**
      * Creates, stores, and persists the task represented by this command.
      *
-     * @param tasks the application's task list
-     * @param ui the application's user interface
-     * @param storage the application's persistence service
+     * @param tasks the application's task list.
+     * @param ui the application's user interface.
+     * @param storage the application's persistence service.
      */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {

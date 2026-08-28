@@ -11,8 +11,8 @@ public abstract class IndexedCommand extends Command {
     /**
      * Parses a one-based task number into a zero-based index.
      *
-     * @param input the task number entered by the user
-     * @return the corresponding zero-based task index
+     * @param input the task number entered by the user.
+     * @return the corresponding zero-based task index.
      */
     protected int parseTaskIndex(String input) {
         if (input == null || input.isEmpty()) {
@@ -50,9 +50,9 @@ public abstract class IndexedCommand extends Command {
     /**
      * Gets a valid task index or throws the standard range error.
      *
-     * @param input the user-supplied task number
-     * @param tasks the task list
-     * @return the zero-based task index
+     * @param input the user-supplied task number.
+     * @param tasks the task list.
+     * @return the zero-based task index.
      */
     protected int requireTaskIndex(String input, TaskList tasks) {
         int taskIndex = parseTaskIndex(input);

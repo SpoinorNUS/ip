@@ -14,8 +14,8 @@ public class Deadline extends Task {
     /**
      * Creates an unfinished deadline.
      *
-     * @param description the task description
-     * @param by the parsed deadline date or date-time
+     * @param description the task description.
+     * @param by the parsed deadline date or date-time.
      */
     public Deadline(String description, Temporal by) {
         super(TaskType.DEADLINE, description);
@@ -25,8 +25,8 @@ public class Deadline extends Task {
     /**
      * Creates an unfinished deadline from user-entered date text.
      *
-     * @param description the task description
-     * @param by the deadline text
+     * @param description the task description.
+     * @param by the deadline text.
      */
     public Deadline(String description, String by) {
         this(description, DateTimeParser.parse(by));
@@ -44,7 +44,7 @@ public class Deadline extends Task {
     /**
      * Returns the display form including the deadline.
      *
-     * @return the formatted deadline
+     * @return the formatted deadline.
      */
     @Override
     public String toString() {

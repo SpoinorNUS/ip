@@ -13,7 +13,7 @@ public class TodoCommand extends AddCommand {
     /**
      * Creates a to-do command.
      *
-     * @param description the to-do description
+     * @param description the to-do description.
      */
     public TodoCommand(String description) {
         this.description = description;
@@ -22,7 +22,7 @@ public class TodoCommand extends AddCommand {
     /**
      * Creates a to-do task from the supplied description.
      *
-     * @return the new to-do task
+     * @return the new to-do task.
      */
     @Override
     protected Task createTask() {

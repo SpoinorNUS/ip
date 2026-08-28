@@ -12,9 +12,9 @@ public class ListCommand extends Command {
     /**
      * Displays the current task list.
      *
-     * @param tasks the application's task list
-     * @param ui the application's user interface
-     * @param storage the application's persistence service, which is not used
+     * @param tasks the application's task list.
+     * @param ui the application's user interface.
+     * @param storage the application's persistence service, which is not used.
      */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {
