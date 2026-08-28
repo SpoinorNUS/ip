@@ -17,6 +17,7 @@ mark 1
 mark 4
 todo borrow book
 list
+find book
 deadline return book /by 07-06-2026
 event project meeting /from 10-08-2026 1400 /to 10-08-2026 1600
 bye
@@ -35,6 +36,10 @@ Expected output: The program prints the corresponding confirmation for each comm
 5.[T][ ] borrow book
 [D][ ] return book (by: 2026-06-07)
 [E][ ] project meeting (from: 2026-08-10 14:00 to: 2026-08-10 16:00)
+Here are the matching tasks in your list:
+1.[T][X] read book
+2.[D][ ] return book (by: 2026-06-06)
+5.[T][ ] borrow book
 Now you have 7 tasks in the list.
 ```
 
@@ -55,6 +60,7 @@ The executable expected-output list is kept below so the `test-ui` skill can run
         "mark 4",
         "todo borrow book",
         "list",
+        "find book",
         "deadline return book /by 07-06-2026",
         "event project meeting /from 10-08-2026 1400 /to 10-08-2026 1600",
         "bye"
@@ -68,6 +74,7 @@ The executable expected-output list is kept below so the `test-ui` skill can run
         "Nice! I've marked this task as done:\n   [X] join sports club",
         "Got it. I've added this task:\n  [T][ ] borrow book\nNow you have 5 tasks in the list.",
         "Here are the tasks in your list:\n 1.[T][X] read book\n 2.[D][ ] return book (by: 2026-06-06)\n 3.[E][ ] project meeting (from: 2026-08-06 14:00 to: 2026-08-06 16:00)\n 4.[T][X] join sports club\n 5.[T][ ] borrow book",
+        "Here are the matching tasks in your list:\n 1.[T][X] read book\n 2.[D][ ] return book (by: 2026-06-06)\n 5.[T][ ] borrow book",
         "Got it. I've added this task:\n  [D][ ] return book (by: 2026-06-07)\nNow you have 6 tasks in the list.",
         "Got it. I've added this task:\n  [E][ ] project meeting (from: 2026-08-10 14:00 to: 2026-08-10 16:00)\nNow you have 7 tasks in the list.",
         "Bye. See you around!"
@@ -105,7 +112,7 @@ The executable expected-output list is kept below so the `test-ui` skill can run
     },
     {
       "name": "Error messages",
-      "aim": "Verify that invalid commands, task numbers, and structured task formats use the custom Turtley error message suffix.",
+      "aim": "Verify that invalid commands, task numbers, structured task formats, and invalid find inputs use the custom Turtley error message suffix.",
       "inputs": [
         "deadline /by tomorrow",
         "event /from 2pm /to 3pm",
@@ -115,6 +122,8 @@ The executable expected-output list is kept below so the `test-ui` skill can run
         "unmark 1",
         "",
         "unknown command",
+        "find book",
+        "find",
         "deadline malformed /by 2026-02-30",
         "event malformed /from 31-02-2026 /to 01-03-2026",
         "event compact time /from 31-12-2026 2300 /to 01-01-2027 0030",
@@ -130,6 +139,8 @@ The executable expected-output list is kept below so the `test-ui` skill can run
         "Task number is not in your list. o/T\\>",
         "Please input something. o/T\\>",
         "Please input something correct. o/T\\>",
+        "Here are the matching tasks in your list:\nNone! o/T\\>",
+        "Invalid format. Use: find <keyword> o/T\\>",
         "Invalid date/time format. Use yyyy-MM-dd, dd-MM-yyyy, yyyy/MM/dd, dd/MM/yyyy, yyyy-MM-dd HH:mm, dd-MM-yyyy HH:mm, yyyy/MM/dd HH:mm, dd/MM/yyyy HH:mm, yyyy-MM-dd HHmm, dd-MM-yyyy HHmm, yyyy/MM/dd HHmm, or dd/MM/yyyy HHmm. o/T\\>",
         "Invalid date/time format. Use yyyy-MM-dd, dd-MM-yyyy, yyyy/MM/dd, dd/MM/yyyy, yyyy-MM-dd HH:mm, dd-MM-yyyy HH:mm, yyyy/MM/dd HH:mm, dd/MM/yyyy HH:mm, yyyy-MM-dd HHmm, dd-MM-yyyy HHmm, yyyy/MM/dd HHmm, or dd/MM/yyyy HHmm. o/T\\>",
         "Got it. I've added this task:\n  [E][ ] compact time (from: 2026-12-31 23:00 to: 2027-01-01 00:30)\nNow you have 1 tasks in the list.",
@@ -229,7 +240,7 @@ Task list empty. Good job! Here's a cookie. o/T\>
 ```
 ## Test case 3: Error messages
 
-Aim: Verify that invalid commands, task numbers, and structured task formats use the custom Turtley error message suffix.
+Aim: Verify that invalid commands, task numbers, structured task formats, and invalid find inputs use the custom Turtley error message suffix.
 
 Inputs:
 
@@ -242,6 +253,8 @@ mark 1
 unmark 1
 
 unknown command
+find book
+find
 deadline malformed /by 2026-02-30
 event malformed /from 31-02-2026 /to 01-03-2026
 event compact time /from 31-12-2026 2300 /to 01-01-2027 0030
@@ -260,6 +273,9 @@ Task number is not in your list. o/T\>
 Task number is not in your list. o/T\>
 Please input something. o/T\>
 Please input something correct. o/T\>
+Here are the matching tasks in your list:
+None! o/T\>
+Invalid format. Use: find <keyword> o/T\>
 Invalid date/time format. Use yyyy-MM-dd, dd-MM-yyyy, yyyy/MM/dd, dd/MM/yyyy, yyyy-MM-dd HH:mm, dd-MM-yyyy HH:mm, yyyy/MM/dd HH:mm, dd/MM/yyyy HH:mm, yyyy-MM-dd HHmm, dd-MM-yyyy HHmm, yyyy/MM/dd HHmm, or dd/MM/yyyy HHmm. o/T\>
 Invalid date/time format. Use yyyy-MM-dd, dd-MM-yyyy, yyyy/MM/dd, dd/MM/yyyy, yyyy-MM-dd HH:mm, dd-MM-yyyy HH:mm, yyyy/MM/dd HH:mm, dd/MM/yyyy HH:mm, yyyy-MM-dd HHmm, dd-MM-yyyy HHmm, yyyy/MM/dd HHmm, or dd/MM/yyyy HHmm. o/T\>
 Got it. I've added this task:

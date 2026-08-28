@@ -147,6 +147,14 @@ public class Ui {
     }
 
     /**
+     * Displays the header for a find result.
+     */
+    public void showFindHeader() {
+        showSeparator();
+        output.println(" Here are the matching tasks in your list:");
+    }
+
+    /**
      * Displays the result used when timecheck finds no matching tasks.
      */
     public void showNoMatchingTasks() {
