@@ -67,6 +67,11 @@ public class Turtley {
         keyboard.close();
     }
 
+    /**
+     * Starts Turtley with its default storage location.
+     *
+     * @param args command-line arguments, which are not used
+     */
     public static void main(String[] args) {
         new Turtley().run();
     }

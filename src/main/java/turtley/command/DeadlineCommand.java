@@ -21,6 +21,12 @@ public class DeadlineCommand extends AddCommand {
         this.input = input;
     }
 
+    /**
+     * Parses the command input into a deadline task.
+     *
+     * @return the parsed deadline task
+     * @throws TurtleyException if the input does not contain a description and deadline
+     */
     @Override
     protected Task createTask() {
         int byIndex = input.indexOf(" /by ");
@@ -36,6 +42,11 @@ public class DeadlineCommand extends AddCommand {
         return new Deadline(description, DateTimeParser.parse(by));
     }
 
+    /**
+     * Creates the standard error for malformed deadline commands.
+     *
+     * @return the deadline format error
+     */
     private TurtleyException invalidFormat() {
         return new TurtleyException("Invalid format. Use: deadline <description> /by <date>");
     }

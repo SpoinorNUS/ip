@@ -77,12 +77,12 @@ def validate_case(case: dict, index: int) -> tuple[str, list[str], list[str]]:
     return name, inputs, expected
 
 
-def run_case(project_root: Path, classes_dir: Path, case: dict, index: int) -> bool:
+def run_case(classes_dir: Path, runtime_dir: Path, case: dict, index: int) -> bool:
     name, inputs, expected = validate_case(case, index)
     session_input = "\n".join(inputs) + "\n"
     process = subprocess.Popen(
         ["java", "-cp", str(classes_dir), "turtley.Turtley"],
-        cwd=project_root,
+        cwd=runtime_dir,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -151,9 +151,11 @@ def main() -> int:
         cases = read_plan(plan_path)
         with tempfile.TemporaryDirectory(prefix="test-ui-") as temp_dir:
             classes_dir = Path(temp_dir)
+            runtime_dir = Path(temp_dir) / "runtime"
+            runtime_dir.mkdir()
             compile_project(project_root, classes_dir)
             for index, case in enumerate(cases, start=1):
-                if not run_case(project_root, classes_dir, case, index):
+                if not run_case(classes_dir, runtime_dir, case, index):
                     print(f"\nStopped after test case {index}; later cases were not run.")
                     return 1
     except (OSError, RuntimeError, ValueError, json.JSONDecodeError) as error:

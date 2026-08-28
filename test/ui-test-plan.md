@@ -1,6 +1,6 @@
 # UI Test Plan
 
-This plan covers the command-line interaction documented for Turtley. Each test case starts a fresh program session. The persistence cases run in order: test case 1 creates the save file, and test case 2 verifies loading it before clearing the list. Delete data/turtley.txt before starting a new full run. The `inputs` and `expected_outputs` arrays in the JSON block are aligned by position: each expected output must appear after the corresponding input's earlier output.
+This plan covers the command-line interaction documented for Turtley. Each test case starts a fresh program session. The persistence cases run in order: test case 1 creates the save file, and test case 2 verifies loading it before clearing the list. The test runner uses an isolated temporary working directory for each full run. The `inputs` and `expected_outputs` arrays in the JSON block are aligned by position: each expected output must appear after the corresponding input's earlier output.
 
 ## Test case 1: To-do, deadline, and event workflow
 

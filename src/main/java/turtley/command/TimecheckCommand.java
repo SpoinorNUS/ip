@@ -26,6 +26,13 @@ public class TimecheckCommand extends Command {
         this.input = input;
     }
 
+    /**
+     * Displays tasks whose deadline or event start is on or before the cutoff.
+     *
+     * @param tasks the application's task list
+     * @param ui the application's user interface
+     * @param storage the application's persistence service, which is not used
+     */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {
         Temporal cutoff = DateTimeParser.parse(input);
