@@ -140,29 +140,29 @@ public class Storage {
         boolean isDone = parseStatus(fields.get(1), lineNumber, line);
         Task task;
         switch (fields.get(0)) {
-        case "T":
-            if (fields.size() != 3) {
-                throw invalidLine(lineNumber, line);
-            }
-            task = new ToDo(requireLoadedField(fields.get(2), "description", lineNumber));
-            break;
-        case "D":
-            if (fields.size() != 4) {
-                throw invalidLine(lineNumber, line);
-            }
-            task = new Deadline(requireLoadedField(fields.get(2), "description", lineNumber),
+            case "T":
+                if (fields.size() != 3) {
+                    throw invalidLine(lineNumber, line);
+                }
+                task = new ToDo(requireLoadedField(fields.get(2), "description", lineNumber));
+                break;
+            case "D":
+                if (fields.size() != 4) {
+                    throw invalidLine(lineNumber, line);
+                }
+                task = new Deadline(requireLoadedField(fields.get(2), "description", lineNumber),
                     parseDateTime(fields.get(3), "deadline", lineNumber));
-            break;
-        case "E":
-            if (fields.size() != 5) {
-                throw invalidLine(lineNumber, line);
-            }
-            task = new Event(requireLoadedField(fields.get(2), "description", lineNumber),
+                break;
+            case "E":
+                if (fields.size() != 5) {
+                    throw invalidLine(lineNumber, line);
+                }
+                task = new Event(requireLoadedField(fields.get(2), "description", lineNumber),
                     parseDateTime(fields.get(3), "start time", lineNumber),
                     parseDateTime(fields.get(4), "end time", lineNumber));
-            break;
-        default:
-            throw invalidLine(lineNumber, line);
+                break;
+            default:
+                throw invalidLine(lineNumber, line);
         }
 
         if (isDone) {
@@ -186,10 +186,10 @@ public class Storage {
             char character = line.charAt(i);
             if (escaping) {
                 switch (character) {
-                case '\\', '|' -> field.append(character);
-                case 'n' -> field.append('\n');
-                case 'r' -> field.append('\r');
-                default -> field.append('\\').append(character);
+                    case '\\', '|' -> field.append(character);
+                    case 'n' -> field.append('\n');
+                    case 'r' -> field.append('\r');
+                    default -> field.append('\\').append(character);
                 }
                 escaping = false;
             } else if (character == '\\') {
@@ -295,23 +295,23 @@ public class Storage {
                 .append(escape(description));
 
         switch (taskType) {
-        case TODO:
-            break;
-        case DEADLINE:
-            if (!(task instanceof Deadline deadline)) {
-                throw new TurtleyException("Unable to save tasks: deadline has no deadline value.");
-            }
-            line.append(" | ").append(escape(DateTimeParser.format(deadline.getBy())));
-            break;
-        case EVENT:
-            if (!(task instanceof Event event)) {
-                throw new TurtleyException("Unable to save tasks: event has no time range.");
-            }
-            line.append(" | ").append(escape(DateTimeParser.format(event.getFrom())))
+            case TODO:
+                break;
+            case DEADLINE:
+                if (!(task instanceof Deadline deadline)) {
+                    throw new TurtleyException("Unable to save tasks: deadline has no deadline value.");
+                }
+                line.append(" | ").append(escape(DateTimeParser.format(deadline.getBy())));
+                break;
+            case EVENT:
+                if (!(task instanceof Event event)) {
+                    throw new TurtleyException("Unable to save tasks: event has no time range.");
+                }
+                line.append(" | ").append(escape(DateTimeParser.format(event.getFrom())))
                     .append(" | ").append(escape(DateTimeParser.format(event.getTo())));
-            break;
-        default:
-            throw new TurtleyException("Unable to save tasks: task type is invalid.");
+                break;
+            default:
+                throw new TurtleyException("Unable to save tasks: task type is invalid.");
         }
 
         return line.toString();

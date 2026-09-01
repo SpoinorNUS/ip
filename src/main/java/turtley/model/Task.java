@@ -46,9 +46,9 @@ public class Task {
      */
     public String getTypeIcon() {
         return switch (taskType) {
-        case TODO -> "T";
-        case DEADLINE -> "D";
-        case EVENT -> "E";
+            case TODO -> "T";
+            case DEADLINE -> "D";
+            case EVENT -> "E";
         };
     }
 
