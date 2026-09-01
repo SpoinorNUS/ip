@@ -83,6 +83,22 @@ public class TaskList {
     }
 
     /**
+     * Inserts a task at the supplied zero-based index.
+     *
+     * @param index the insertion index.
+     * @param task the task to insert.
+     */
+    public void add(int index, Task task) {
+        if (task == null) {
+            throw new TurtleyException("Cannot add a null task.");
+        }
+        if (isFull()) {
+            throw new TurtleyException("Task list exceeds 100 tasks.");
+        }
+        tasks.add(index, task);
+    }
+
+    /**
      * Adds all supplied tasks to the end of the list.
      *
      * @param newTasks the tasks to add.
@@ -106,22 +122,6 @@ public class TaskList {
      */
     public Task remove(int index) {
         return tasks.remove(index);
-    }
-
-    /**
-     * Inserts a task at the supplied zero-based index.
-     *
-     * @param index the insertion index.
-     * @param task the task to insert.
-     */
-    public void add(int index, Task task) {
-        if (task == null) {
-            throw new TurtleyException("Cannot add a null task.");
-        }
-        if (isFull()) {
-            throw new TurtleyException("Task list exceeds 100 tasks.");
-        }
-        tasks.add(index, task);
     }
 
     /**
