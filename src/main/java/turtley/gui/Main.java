@@ -1,6 +1,7 @@
 package turtley.gui;
 
 import java.io.IOException;
+import java.net.URL;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -27,6 +28,12 @@ public class Main extends Application {
             FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/view/MainWindow.fxml"));
             AnchorPane root = fxmlLoader.load();
             Scene scene = new Scene(root);
+            URL stylesheet = Main.class.getResource("/styles/gui.css");
+            if (stylesheet == null) {
+                throw new IllegalStateException("Missing GUI stylesheet resource.");
+            }
+            scene.getStylesheets().add(stylesheet.toExternalForm());
+            stage.setTitle("Turtley");
             stage.setScene(scene);
             fxmlLoader.<MainWindow>getController().setTurtley(turtley);
             stage.show();

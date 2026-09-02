@@ -59,6 +59,18 @@ class TurtleyTest {
         assertEquals("Bye. See you around! o/T" + (char) 92 + ">", response);
     }
 
+    @Test
+    void getWelcomeMessage_returnsBannerAndGreeting() {
+        Turtley turtley = createTurtley();
+
+        String response = turtley.getWelcomeMessage();
+        assertTrue(response.startsWith("      _____________"));
+
+        assertTrue(response.contains("Turtley"));
+        assertTrue(response.contains("Hello! I'm Turtley."));
+        assertTrue(response.contains("What can I do for you?"));
+    }
+
     private Turtley createTurtley() {
         Path saveFile = temporaryDirectory.resolve("turtley.txt");
         return new Turtley(saveFile.toString());

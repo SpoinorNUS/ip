@@ -1,18 +1,19 @@
-package turtley.gui;
+package turtley.gui
 
-import java.io.IOException;
-import java.util.Collections;
+import java.io.IOException
+import java.util.Collections
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
+import javafx.collections.FXCollections
+import javafx.collections.ObservableList
+import javafx.fxml.FXML
+import javafx.fxml.FXMLLoader
+import javafx.geometry.Pos
+import javafx.scene.Node
+import javafx.scene.control.Label
+import javafx.scene.image.Image
+import javafx.scene.image.ImageView
+import javafx.scene.layout.HBox
+import javafx.scene.text.Font
 
 /**
  * Represents a dialog row containing a speaker image and message text.
@@ -59,6 +60,21 @@ public class DialogBox extends HBox {
     public static DialogBox getTurtleyDialog(String text, Image image) {
         DialogBox dialogBox = new DialogBox(text, image);
         dialogBox.flip();
+        return dialogBox;
+    }
+
+    /**
+     * Creates a Turtley welcome row with fixed-width text for aligned ASCII art.
+     *
+     * @param text the Turtley welcome message.
+     * @param image the Turtley avatar.
+     * @return the Turtley welcome row.
+     */
+    public static DialogBox getTurtleyWelcomeDialog(String text, Image image) {
+        DialogBox dialogBox = new DialogBox(text, image);
+        dialogBox.flip();
+        dialogBox.dialog.setFont(Font.font("Monospaced"));
+        dialogBox.dialog.setWrapText(false);
         return dialogBox;
     }
 

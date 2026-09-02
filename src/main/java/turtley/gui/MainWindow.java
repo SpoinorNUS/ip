@@ -9,6 +9,11 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.VBox;
 import turtley.Turtley;
 
@@ -17,6 +22,8 @@ import turtley.Turtley;
  */
 public class MainWindow extends AnchorPane {
 
+    @FXML
+    private AnchorPane rootPane;
     @FXML
     private ScrollPane scrollPane;
     @FXML
@@ -29,22 +36,34 @@ public class MainWindow extends AnchorPane {
     private Turtley turtley;
     private final Image userImage = loadImage("/images/DaUser.png");
     private final Image turtleyImage = loadImage("/images/DaTurtley.png");
+    private final Image backgroundImage = loadImage("/images/Background.png");
 
     /**
-     * Binds the conversation scroll position to the height of its contents.
+     * Binds the conversation scroll position and applies the window background.
      */
     @FXML
     public void initialize() {
         scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
+
+        BackgroundSize backgroundSize = new BackgroundSize(1.0, 1.0, true, true, false, true);
+        BackgroundImage background = new BackgroundImage(backgroundImage,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.CENTER,
+                backgroundSize);
+        rootPane.setBackground(new Background(background));
     }
 
     /**
-     * Supplies the Turtley instance that processes user commands.
+     * Supplies the Turtley instance that processes user commands and displays the initial greeting.
      *
      * @param turtley the application logic used by this window.
      */
     public void setTurtley(Turtley turtley) {
         this.turtley = turtley;
+        dialogContainer.getChildren().add(DialogBox.getTurtleyWelcomeDialog(
+                turtley.getWelcomeMessage(),
+                turtleyImage));
     }
 
     /**
