@@ -16,17 +16,18 @@ public class Ui {
     private static final String SEPARATOR = "____________________________________________________________";
     private static final String BANNER = "      _____________ \n"
             + "__   /__|_______|__\\ \n"
-            + "\\^ \\/______|_|______\\\n"
+            + "\\^ /______|_|______\\\n"
             + " \\ /_______|_|_______\\>\n"
             + "   |_/ |_/     \\_| \\_|\n Turtley";
 
     private final PrintStream output;
+    private final boolean showSeparators;
 
     /**
      * Creates a UI that writes to standard output.
      */
     public Ui() {
-        this(System.out);
+        this(System.out, true);
     }
 
     /**
@@ -35,7 +36,18 @@ public class Ui {
      * @param output the stream used for user-facing output.
      */
     public Ui(PrintStream output) {
+        this(output, true);
+    }
+
+    /**
+     * Creates a UI that writes to the supplied output stream, optionally including separators.
+     *
+     * @param output the stream used for user-facing output.
+     * @param showSeparators whether standard separator lines should be printed.
+     */
+    public Ui(PrintStream output, boolean showSeparators) {
         this.output = Objects.requireNonNull(output);
+        this.showSeparators = showSeparators;
     }
 
     /**
@@ -219,6 +231,8 @@ public class Ui {
      * Displays the standard separator line.
      */
     public void showSeparator() {
-        output.println(SEPARATOR);
+        if (showSeparators) {
+            output.println(SEPARATOR);
+        }
     }
 }

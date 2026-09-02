@@ -24,3 +24,6 @@ _temp/
 
 /text-ui-test/ACTUAL.TXT
 text-ui-test/EXPECTED-UNIX.TXT
+
+# Ignore javafx reference files
+javafx-tutorial-reference/
