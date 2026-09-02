@@ -1,8 +1,15 @@
 package turtley.gui
 
 import java.io.IOException
+import java.net.URL
 import java.util.Collections
 
+import javafx.animation.Animation
+import javafx.animation.Interpolator
+import javafx.animation.KeyFrame
+import javafx.animation.RotateTransition
+import javafx.animation.Timeline
+import javafx.animation.TranslateTransition
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.fxml.FXML
@@ -13,17 +20,33 @@ import javafx.scene.control.Label
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.layout.HBox
+import javafx.scene.media.Media
+import javafx.scene.media.MediaPlayer
 import javafx.scene.text.Font
+import javafx.util.Duration
 
 /**
  * Represents a dialog row containing a speaker image and message text.
  */
 public class DialogBox extends HBox {
 
+    private static final double TYPING_INTERVAL_MILLIS = 20.0;
+    private static final double BOB_DISTANCE = 6.0;
+    private static final double BOB_DURATION_MILLIS = 300.0;
+    private static final double ROTATION_ANGLE = 12.0;
+    private static final String VOICE_RESOURCE = "/images/TurtleyVoice.mp4";
+
+    private static MediaPlayer activeVoicePlayer;
+
     @FXML
     private Label dialog;
     @FXML
     private ImageView displayPicture;
+
+    private Timeline typingAnimation;
+    private TranslateTransition bobAnimation;
+    private RotateTransition rotationAnimation;
+    private MediaPlayer voicePlayer;
 
     private DialogBox(String text, Image image) {
         try {
@@ -51,15 +74,16 @@ public class DialogBox extends HBox {
     }
 
     /**
-     * Creates a dialog row aligned as a Turtley response.
+     * Creates a dialog row aligned as a Turtley response and types it out.
      *
      * @param text the Turtley response.
      * @param image the Turtley avatar.
-     * @return the Turtley dialog row.
+     * @return the animated Turtley dialog row.
      */
     public static DialogBox getTurtleyDialog(String text, Image image) {
-        DialogBox dialogBox = new DialogBox(text, image);
+        DialogBox dialogBox = new DialogBox("", image);
         dialogBox.flip();
+        dialogBox.startTyping(text);
         return dialogBox;
     }
 
@@ -71,11 +95,116 @@ public class DialogBox extends HBox {
      * @return the Turtley welcome row.
      */
     public static DialogBox getTurtleyWelcomeDialog(String text, Image image) {
-        DialogBox dialogBox = new DialogBox(text, image);
-        dialogBox.flip();
+        DialogBox dialogBox = getTurtleyDialog(text, image);
         dialogBox.dialog.setFont(Font.font("Monospaced"));
         dialogBox.dialog.setWrapText(false);
         return dialogBox;
+    }
+
+    /**
+     * Starts revealing the dialog text and animating the avatar one character at a time.
+     *
+     * @param text the complete dialog text.
+     */
+    private void startTyping(String text) {
+        stopAnimations();
+        stopActiveVoicePlayer();
+
+        dialog.setText("");
+        if (text.isEmpty()) {
+            return;
+        }
+
+        bobAnimation = new TranslateTransition(Duration.millis(BOB_DURATION_MILLIS), displayPicture);
+        bobAnimation.setByY(BOB_DISTANCE);
+        bobAnimation.setAutoReverse(true);
+        bobAnimation.setCycleCount(Animation.INDEFINITE);
+        bobAnimation.setInterpolator(Interpolator.EASE_BOTH);
+        bobAnimation.play();
+
+        rotationAnimation = new RotateTransition(Duration.millis(BOB_DURATION_MILLIS), displayPicture);
+        rotationAnimation.setByAngle(ROTATION_ANGLE);
+        rotationAnimation.setAutoReverse(true);
+        rotationAnimation.setCycleCount(Animation.INDEFINITE);
+        rotationAnimation.setInterpolator(Interpolator.EASE_BOTH);
+        rotationAnimation.play();
+
+        voicePlayer = loadVoicePlayer();
+        activeVoicePlayer = voicePlayer;
+        voicePlayer.setCycleCount(MediaPlayer.INDEFINITE);
+        voicePlayer.play();
+
+        typingAnimation = new Timeline(new KeyFrame(
+                Duration.millis(TYPING_INTERVAL_MILLIS),
+                event -> {
+                    int nextLength = dialog.getText().length() + 1;
+                    dialog.setText(text.substring(0, nextLength));
+                }));
+        typingAnimation.setCycleCount(text.length());
+        typingAnimation.setOnFinished(event -> stopAnimations());
+        typingAnimation.play();
+    }
+
+    /**
+     * Stops all currently playing Turtley voice audio.
+     */
+    private static void stopActiveVoicePlayer() {
+        if (activeVoicePlayer != null) {
+            stopAndDispose(activeVoicePlayer);
+            activeVoicePlayer = null;
+        }
+    }
+
+    /**
+     * Stops the avatar and voice animations and restores the avatar's original transform.
+     */
+    private void stopAnimations() {
+        if (bobAnimation != null) {
+            bobAnimation.stop();
+            displayPicture.setTranslateY(0.0);
+            bobAnimation = null;
+        }
+        if (rotationAnimation != null) {
+            rotationAnimation.stop();
+            displayPicture.setRotate(0.0);
+            rotationAnimation = null;
+        }
+        if (voicePlayer != null) {
+            MediaPlayer currentVoicePlayer = voicePlayer;
+            voicePlayer = null;
+            if (currentVoicePlayer == activeVoicePlayer) {
+                activeVoicePlayer = null;
+            }
+            stopAndDispose(currentVoicePlayer);
+        }
+    }
+
+    /**
+     * Stops, rewinds, and releases a voice player.
+     *
+     * @param player the voice player to release.
+     */
+    private static void stopAndDispose(MediaPlayer player) {
+        if (player.getStatus() == MediaPlayer.Status.DISPOSED) {
+            return;
+        }
+        player.pause();
+        player.stop();
+        player.seek(Duration.ZERO);
+        player.dispose();
+    }
+
+    /**
+     * Loads Turtley's voice player from the application's bundled resources.
+     *
+     * @return the loaded voice player.
+     */
+    private static MediaPlayer loadVoicePlayer() {
+        URL voiceUrl = DialogBox.class.getResource(VOICE_RESOURCE);
+        if (voiceUrl == null) {
+            throw new IllegalStateException("Missing Turtley voice resource: " + VOICE_RESOURCE);
+        }
+        return new MediaPlayer(new Media(voiceUrl.toExternalForm()));
     }
 
     /**
