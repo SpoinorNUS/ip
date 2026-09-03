@@ -1,29 +1,29 @@
-package turtley.gui
+package turtley.gui;
 
-import java.io.IOException
-import java.net.URL
-import java.util.Collections
+import java.io.IOException;
+import java.net.URL;
+import java.util.Collections;
 
-import javafx.animation.Animation
-import javafx.animation.Interpolator
-import javafx.animation.KeyFrame
-import javafx.animation.RotateTransition
-import javafx.animation.Timeline
-import javafx.animation.TranslateTransition
-import javafx.collections.FXCollections
-import javafx.collections.ObservableList
-import javafx.fxml.FXML
-import javafx.fxml.FXMLLoader
-import javafx.geometry.Pos
-import javafx.scene.Node
-import javafx.scene.control.Label
-import javafx.scene.image.Image
-import javafx.scene.image.ImageView
-import javafx.scene.layout.HBox
-import javafx.scene.media.Media
-import javafx.scene.media.MediaPlayer
-import javafx.scene.text.Font
-import javafx.util.Duration
+import javafx.animation.Animation;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.RotateTransition;
+import javafx.animation.Timeline;
+import javafx.animation.TranslateTransition;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.text.Font;
+import javafx.util.Duration;
 
 /**
  * Represents a dialog row containing a speaker image and message text.
@@ -36,7 +36,9 @@ public class DialogBox extends HBox {
     private static final double ROTATION_ANGLE = 12.0;
     private static final String VOICE_RESOURCE = "/images/TurtleyVoice.mp4";
 
+    private static Media voiceMedia;
     private static MediaPlayer activeVoicePlayer;
+    private static DialogBox activeVoiceOwner;
 
     @FXML
     private Label dialog;
@@ -129,10 +131,19 @@ public class DialogBox extends HBox {
         rotationAnimation.setInterpolator(Interpolator.EASE_BOTH);
         rotationAnimation.play();
 
-        voicePlayer = loadVoicePlayer();
-        activeVoicePlayer = voicePlayer;
-        voicePlayer.setCycleCount(MediaPlayer.INDEFINITE);
-        voicePlayer.play();
+        MediaPlayer currentVoicePlayer = loadVoicePlayer();
+        voicePlayer = currentVoicePlayer;
+        activeVoicePlayer = currentVoicePlayer;
+        activeVoiceOwner = this;
+        currentVoicePlayer.setCycleCount(MediaPlayer.INDEFINITE);
+        currentVoicePlayer.setOnReady(() -> {
+            if (activeVoiceOwner == this && activeVoicePlayer == currentVoicePlayer) {
+                currentVoicePlayer.play();
+            }
+        });
+        if (currentVoicePlayer.getStatus() == MediaPlayer.Status.READY) {
+            currentVoicePlayer.play();
+        }
 
         typingAnimation = new Timeline(new KeyFrame(
                 Duration.millis(TYPING_INTERVAL_MILLIS),
@@ -152,6 +163,7 @@ public class DialogBox extends HBox {
         if (activeVoicePlayer != null) {
             stopAndDispose(activeVoicePlayer);
             activeVoicePlayer = null;
+            activeVoiceOwner = null;
         }
     }
 
@@ -172,10 +184,11 @@ public class DialogBox extends HBox {
         if (voicePlayer != null) {
             MediaPlayer currentVoicePlayer = voicePlayer;
             voicePlayer = null;
-            if (currentVoicePlayer == activeVoicePlayer) {
-                activeVoicePlayer = null;
+            if (activeVoiceOwner == this && currentVoicePlayer == activeVoicePlayer) {
+                stopActiveVoicePlayer();
+            } else {
+                stopAndDispose(currentVoicePlayer);
             }
-            stopAndDispose(currentVoicePlayer);
         }
     }
 
@@ -195,16 +208,30 @@ public class DialogBox extends HBox {
     }
 
     /**
-     * Loads Turtley's voice player from the application's bundled resources.
+     * Creates a voice player for the cached media.
      *
-     * @return the loaded voice player.
+     * @return a new voice player.
      */
     private static MediaPlayer loadVoicePlayer() {
+        return new MediaPlayer(loadVoiceMedia());
+    }
+
+    /**
+     * Returns the cached voice media, loading the resource only on first use.
+     *
+     * @return the voice media.
+     */
+    private static Media loadVoiceMedia() {
+        if (voiceMedia != null) {
+            return voiceMedia;
+        }
+
         URL voiceUrl = DialogBox.class.getResource(VOICE_RESOURCE);
         if (voiceUrl == null) {
             throw new IllegalStateException("Missing Turtley voice resource: " + VOICE_RESOURCE);
         }
-        return new MediaPlayer(new Media(voiceUrl.toExternalForm()));
+        voiceMedia = new Media(voiceUrl.toExternalForm());
+        return voiceMedia;
     }
 
     /**
