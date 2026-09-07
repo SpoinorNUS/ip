@@ -75,6 +75,15 @@ jar {
 
 shadowJar {
     archiveFileName = 'turtley.jar'
+
+    // JavaFX and other libraries may provide service descriptors with the same path.
+    // Merge them so service-based discovery continues to work from the bundled JAR.
+    mergeServiceFiles()
+}
+
+// Ensure the distributable JAR is produced whenever the standard build task is run.
+build {
+    dependsOn shadowJar
 }
 
 run {
