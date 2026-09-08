@@ -193,37 +193,74 @@ public class Storage {
         }
 
         boolean isDone = parseStatus(fields.get(1), lineNumber, line);
-        Task task;
-        switch (fields.get(0)) {
-            case "T":
-                if (fields.size() != 3) {
-                    throw invalidLine(lineNumber, line);
-                }
-                task = new ToDo(requireLoadedField(fields.get(2), "description", lineNumber));
-                break;
-            case "D":
-                if (fields.size() != 4) {
-                    throw invalidLine(lineNumber, line);
-                }
-                task = new Deadline(requireLoadedField(fields.get(2), "description", lineNumber),
-                    parseDateTime(fields.get(3), "deadline", lineNumber));
-                break;
-            case "E":
-                if (fields.size() != 5) {
-                    throw invalidLine(lineNumber, line);
-                }
-                task = new Event(requireLoadedField(fields.get(2), "description", lineNumber),
-                    parseDateTime(fields.get(3), "start time", lineNumber),
-                    parseDateTime(fields.get(4), "end time", lineNumber));
-                break;
-            default:
-                throw invalidLine(lineNumber, line);
-        }
+        Task task = switch (fields.get(0)) {
+            case "T" -> deserializeToDo(fields, lineNumber, line);
+            case "D" -> deserializeDeadline(fields, lineNumber, line);
+            case "E" -> deserializeEvent(fields, lineNumber, line);
+            default -> throw invalidLine(lineNumber, line);
+        };
 
         if (isDone) {
             task.markAsDone();
         }
         return task;
+    }
+
+    /**
+     * Reconstructs a to-do task from decoded save-file fields.
+     *
+     * @param fields the decoded save-file fields.
+     * @param lineNumber the source line number.
+     * @param line the complete source line.
+     * @return the reconstructed to-do task.
+     */
+    private static Task deserializeToDo(List<String> fields, int lineNumber, String line) {
+        requireFieldCount(fields, 3, lineNumber, line);
+        return new ToDo(requireLoadedField(fields.get(2), "description", lineNumber));
+    }
+
+    /**
+     * Reconstructs a deadline task from decoded save-file fields.
+     *
+     * @param fields the decoded save-file fields.
+     * @param lineNumber the source line number.
+     * @param line the complete source line.
+     * @return the reconstructed deadline task.
+     */
+    private static Task deserializeDeadline(List<String> fields, int lineNumber, String line) {
+        requireFieldCount(fields, 4, lineNumber, line);
+        return new Deadline(requireLoadedField(fields.get(2), "description", lineNumber),
+                parseDateTime(fields.get(3), "deadline", lineNumber));
+    }
+
+    /**
+     * Reconstructs an event task from decoded save-file fields.
+     *
+     * @param fields the decoded save-file fields.
+     * @param lineNumber the source line number.
+     * @param line the complete source line.
+     * @return the reconstructed event task.
+     */
+    private static Task deserializeEvent(List<String> fields, int lineNumber, String line) {
+        requireFieldCount(fields, 5, lineNumber, line);
+        return new Event(requireLoadedField(fields.get(2), "description", lineNumber),
+                parseDateTime(fields.get(3), "start time", lineNumber),
+                parseDateTime(fields.get(4), "end time", lineNumber));
+    }
+
+    /**
+     * Requires a decoded record to contain the expected number of fields.
+     *
+     * @param fields the decoded save-file fields.
+     * @param expectedCount the required field count.
+     * @param lineNumber the source line number.
+     * @param line the complete source line.
+     */
+    private static void requireFieldCount(List<String> fields, int expectedCount,
+            int lineNumber, String line) {
+        if (fields.size() != expectedCount) {
+            throw invalidLine(lineNumber, line);
+        }
     }
 
     /**
