@@ -94,6 +94,7 @@ public class Turtley {
      */
     private Command executeCommand(String input, Ui commandUi) {
         Command command = Parser.parse(input);
+        assert command != null : "Parser must return a command for every input line.";
         try {
             command.execute(tasks, commandUi, storage);
         } catch (TurtleyException exception) {

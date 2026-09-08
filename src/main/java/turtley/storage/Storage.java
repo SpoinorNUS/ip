@@ -165,6 +165,7 @@ public class Storage {
                 throw invalidLine(lineNumber, line);
         }
 
+        assert task != null : "Every supported save-file record must create a task.";
         if (isDone) {
             task.markAsDone();
         }
