@@ -24,7 +24,8 @@ import turtley.util.DateTimeParser;
  */
 public class Storage {
 
-    private static final int MAX_TASK_NUM = 100;
+    private static final int MAX_TASK_COUNT = 100;
+    private static final String TASK_LIMIT_MESSAGE = "task list exceeds " + MAX_TASK_COUNT + " tasks.";
     private final Path dataFile;
     private final Path tempDataFile;
 
@@ -51,8 +52,8 @@ public class Storage {
         if (tasks == null) {
             throw new TurtleyException("Unable to save tasks: task list is null.");
         }
-        if (tasks.size() > MAX_TASK_NUM) {
-            throw new TurtleyException("Unable to save tasks: task list exceeds 100 tasks.");
+        if (tasks.size() > MAX_TASK_COUNT) {
+            throw new TurtleyException("Unable to save tasks: " + TASK_LIMIT_MESSAGE);
         }
 
         StringBuilder fileContents = new StringBuilder();
@@ -111,8 +112,8 @@ public class Storage {
                     if (line.isBlank()) {
                         continue;
                     }
-                    if (tasks.size() >= MAX_TASK_NUM) {
-                        throw new TurtleyException("Unable to load tasks from disk: task list exceeds 100 tasks.");
+                    if (tasks.size() >= MAX_TASK_COUNT) {
+                        throw new TurtleyException("Unable to load tasks from disk: " + TASK_LIMIT_MESSAGE);
                     }
                     tasks.add(deserialize(line, lineNumber));
                 }
