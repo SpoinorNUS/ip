@@ -9,6 +9,7 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import turtley.exception.TurtleyException;
 import turtley.model.Deadline;
@@ -55,13 +56,9 @@ public class Storage {
             throw new TurtleyException("Unable to save tasks: task list exceeds 100 tasks.");
         }
 
-        StringBuilder fileContents = new StringBuilder();
-        for (Task task : tasks) {
-            if (fileContents.length() > 0) {
-                fileContents.append(System.lineSeparator());
-            }
-            fileContents.append(serialize(task));
-        }
+        String fileContents = tasks.stream()
+                .map(Storage::serialize)
+                .collect(Collectors.joining(System.lineSeparator()));
 
         try {
             Path parent = dataFile.getParent();
