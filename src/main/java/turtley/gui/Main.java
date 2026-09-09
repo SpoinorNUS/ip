@@ -35,8 +35,8 @@ public class Main extends Application {
             scene.getStylesheets().add(stylesheet.toExternalForm());
             stage.setTitle("Turtley");
             stage.setScene(scene);
-            fxmlLoader.<MainWindow>getController().setTurtley(turtley);
             stage.show();
+            fxmlLoader.<MainWindow>getController().setTurtley(turtley);
         } catch (IOException exception) {
             throw new IllegalStateException("Unable to load the Turtley interface.", exception);
         }

@@ -49,6 +49,7 @@ public class DialogBox extends HBox {
     private TranslateTransition bobAnimation;
     private RotateTransition rotationAnimation;
     private MediaPlayer voicePlayer;
+    private boolean isPlaybackStarted;
 
     private DialogBox(String text, Image image) {
         try {
@@ -111,6 +112,7 @@ public class DialogBox extends HBox {
     private void startTyping(String text) {
         stopAnimations();
         stopActiveVoicePlayer();
+        isPlaybackStarted = false;
 
         dialog.setText("");
         if (text.isEmpty()) {
@@ -122,28 +124,12 @@ public class DialogBox extends HBox {
         bobAnimation.setAutoReverse(true);
         bobAnimation.setCycleCount(Animation.INDEFINITE);
         bobAnimation.setInterpolator(Interpolator.EASE_BOTH);
-        bobAnimation.play();
 
         rotationAnimation = new RotateTransition(Duration.millis(BOB_DURATION_MILLIS), displayPicture);
         rotationAnimation.setByAngle(ROTATION_ANGLE);
         rotationAnimation.setAutoReverse(true);
         rotationAnimation.setCycleCount(Animation.INDEFINITE);
         rotationAnimation.setInterpolator(Interpolator.EASE_BOTH);
-        rotationAnimation.play();
-
-        MediaPlayer currentVoicePlayer = loadVoicePlayer();
-        voicePlayer = currentVoicePlayer;
-        activeVoicePlayer = currentVoicePlayer;
-        activeVoiceOwner = this;
-        currentVoicePlayer.setCycleCount(MediaPlayer.INDEFINITE);
-        currentVoicePlayer.setOnReady(() -> {
-            if (activeVoiceOwner == this && activeVoicePlayer == currentVoicePlayer) {
-                currentVoicePlayer.play();
-            }
-        });
-        if (currentVoicePlayer.getStatus() == MediaPlayer.Status.READY) {
-            currentVoicePlayer.play();
-        }
 
         typingAnimation = new Timeline(new KeyFrame(
                 Duration.millis(TYPING_INTERVAL_MILLIS),
@@ -153,6 +139,32 @@ public class DialogBox extends HBox {
                 }));
         typingAnimation.setCycleCount(text.length());
         typingAnimation.setOnFinished(event -> stopAnimations());
+
+        MediaPlayer currentVoicePlayer = loadVoicePlayer();
+        voicePlayer = currentVoicePlayer;
+        activeVoicePlayer = currentVoicePlayer;
+        activeVoiceOwner = this;
+        currentVoicePlayer.setCycleCount(MediaPlayer.INDEFINITE);
+        currentVoicePlayer.setOnReady(() -> startSynchronizedPlayback(currentVoicePlayer));
+        if (currentVoicePlayer.getStatus() == MediaPlayer.Status.READY) {
+            startSynchronizedPlayback(currentVoicePlayer);
+        }
+    }
+
+    /**
+     * Starts the media, typing, and avatar animations at the same time.
+     *
+     * @param player the media player that has finished loading.
+     */
+    private void startSynchronizedPlayback(MediaPlayer player) {
+        if (isPlaybackStarted || activeVoiceOwner != this || activeVoicePlayer != player) {
+            return;
+        }
+
+        isPlaybackStarted = true;
+        player.play();
+        bobAnimation.play();
+        rotationAnimation.play();
         typingAnimation.play();
     }
 

@@ -18,6 +18,7 @@ public class TaskList {
      * Creates an empty task list.
      */
     public TaskList() {
+        assertInvariants();
     }
 
     /**
@@ -80,6 +81,7 @@ public class TaskList {
             throw new TurtleyException("Task list exceeds 100 tasks.");
         }
         tasks.add(task);
+        assertInvariants();
     }
 
     /**
@@ -96,6 +98,7 @@ public class TaskList {
             throw new TurtleyException("Task list exceeds 100 tasks.");
         }
         tasks.add(index, task);
+        assertInvariants();
     }
 
     /**
@@ -112,6 +115,7 @@ public class TaskList {
             throw new TurtleyException("Task list exceeds 100 tasks.");
         }
         tasks.addAll(newTasks);
+        assertInvariants();
     }
 
     /**
@@ -121,7 +125,10 @@ public class TaskList {
      * @return the removed task.
      */
     public Task remove(int index) {
-        return tasks.remove(index);
+        Task removedTask = tasks.remove(index);
+        assert removedTask != null : "TaskList must never contain null tasks.";
+        assertInvariants();
+        return removedTask;
     }
 
     /**
@@ -131,5 +138,16 @@ public class TaskList {
      */
     public List<Task> asList() {
         return Collections.unmodifiableList(tasks);
+    }
+
+    /**
+     * Checks the invariants maintained by this task list.
+     *
+     * <p>Assertions are used because these conditions are guaranteed by the list's own mutation
+     * methods and indicate a programming error if they ever fail.</p>
+     */
+    private void assertInvariants() {
+        assert tasks.size() <= MAX_TASK_NUM : "TaskList must not exceed its maximum capacity.";
+        assert tasks.stream().allMatch(task -> task != null) : "TaskList must not contain null tasks.";
     }
 }
