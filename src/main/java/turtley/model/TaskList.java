@@ -148,7 +148,7 @@ public class TaskList {
      * methods and indicate a programming error if they ever fail.</p>
      */
     private void assertInvariants() {
-        assert tasks.size() <= MAX_TASK_NUM : "TaskList must not exceed its maximum capacity.";
+        assert tasks.size() <= MAX_TASK_COUNT : "TaskList must not exceed its maximum capacity.";
         assert tasks.stream().allMatch(task -> task != null) : "TaskList must not contain null tasks.";
     }
 }
