@@ -24,7 +24,8 @@ import turtley.util.DateTimeParser;
  */
 public class Storage {
 
-    private static final int MAX_TASK_NUM = 100;
+    private static final int MAX_TASK_COUNT = 100;
+    private static final String TASK_LIMIT_MESSAGE = "task list exceeds " + MAX_TASK_COUNT + " tasks.";
     private final Path dataFile;
     private final Path tempDataFile;
 
@@ -48,13 +49,45 @@ public class Storage {
      * @throws TurtleyException if the task list is invalid or cannot be written.
      */
     public void save(List<Task> tasks) {
+        validateTasksForSaving(tasks);
+        String fileContents = serializeTasks(tasks);
+
+        try {
+            prepareParentDirectory();
+            if (tasks.isEmpty()) {
+                deleteDataFile();
+                return;
+            }
+            writeTasks(fileContents);
+        } catch (IOException | SecurityException exception) {
+            throw new TurtleyException("Unable to save tasks to disk.", exception);
+        } finally {
+            deleteTempDataFile();
+        }
+    }
+
+    /**
+     * Validates the task list before serializing it.
+     *
+     * @param tasks the task list to validate.
+     * @throws TurtleyException if the task list is null or exceeds capacity.
+     */
+    private static void validateTasksForSaving(List<Task> tasks) {
         if (tasks == null) {
             throw new TurtleyException("Unable to save tasks: task list is null.");
         }
-        if (tasks.size() > MAX_TASK_NUM) {
-            throw new TurtleyException("Unable to save tasks: task list exceeds 100 tasks.");
+        if (tasks.size() > MAX_TASK_COUNT) {
+            throw new TurtleyException("Unable to save tasks: " + TASK_LIMIT_MESSAGE);
         }
+    }
 
+    /**
+     * Serializes all tasks into the save-file representation.
+     *
+     * @param tasks the tasks to serialize.
+     * @return the serialized task records separated by the platform line separator.
+     */
+    private static String serializeTasks(List<Task> tasks) {
         StringBuilder fileContents = new StringBuilder();
         for (Task task : tasks) {
             if (fileContents.length() > 0) {
@@ -62,30 +95,52 @@ public class Storage {
             }
             fileContents.append(serialize(task));
         }
+        return fileContents.toString();
+    }
 
-        try {
-            Path parent = dataFile.getParent();
-            if (parent != null) {
-                Files.createDirectories(parent);
-            }
-            if (tasks.isEmpty()) {
-                Files.deleteIfExists(dataFile);
-                return;
-            }
-            Files.writeString(tempDataFile, fileContents.toString(), StandardCharsets.UTF_8,
-                    StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
-            Files.move(tempDataFile, dataFile, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException | SecurityException exception) {
-            throw new TurtleyException("Unable to save tasks to disk.", exception);
-        } finally {
-            try {
-                Files.deleteIfExists(tempDataFile);
-            } catch (IOException | SecurityException ignored) {
-                // The next save overwrites the temporary file if cleanup is unavailable.
-            }
+    /**
+     * Creates the parent directory for the save file when one is required.
+     *
+     * @throws IOException if the directory cannot be created.
+     */
+    private void prepareParentDirectory() throws IOException {
+        Path parent = dataFile.getParent();
+        if (parent != null) {
+            Files.createDirectories(parent);
         }
     }
 
+    /**
+     * Deletes the save file when the task list becomes empty.
+     *
+     * @throws IOException if the file cannot be deleted.
+     */
+    private void deleteDataFile() throws IOException {
+        Files.deleteIfExists(dataFile);
+    }
+
+    /**
+     * Writes serialized tasks through a temporary file before replacing the save file.
+     *
+     * @param fileContents the serialized task records.
+     * @throws IOException if the temporary file cannot be written or moved.
+     */
+    private void writeTasks(String fileContents) throws IOException {
+        Files.writeString(tempDataFile, fileContents, StandardCharsets.UTF_8,
+                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
+        Files.move(tempDataFile, dataFile, StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    /**
+     * Removes the temporary save file after a save attempt.
+     */
+    private void deleteTempDataFile() {
+        try {
+            Files.deleteIfExists(tempDataFile);
+        } catch (IOException | SecurityException ignored) {
+            // The next save overwrites the temporary file if cleanup is unavailable.
+        }
+    }
 
     /**
      * Reads all saved tasks. A missing save file represents an empty task list.
@@ -111,8 +166,8 @@ public class Storage {
                     if (line.isBlank()) {
                         continue;
                     }
-                    if (tasks.size() >= MAX_TASK_NUM) {
-                        throw new TurtleyException("Unable to load tasks from disk: task list exceeds 100 tasks.");
+                    if (tasks.size() >= MAX_TASK_COUNT) {
+                        throw new TurtleyException("Unable to load tasks from disk: " + TASK_LIMIT_MESSAGE);
                     }
                     tasks.add(deserialize(line, lineNumber));
                 }
@@ -138,38 +193,75 @@ public class Storage {
         }
 
         boolean isDone = parseStatus(fields.get(1), lineNumber, line);
-        Task task;
-        switch (fields.get(0)) {
-            case "T":
-                if (fields.size() != 3) {
-                    throw invalidLine(lineNumber, line);
-                }
-                task = new ToDo(requireLoadedField(fields.get(2), "description", lineNumber));
-                break;
-            case "D":
-                if (fields.size() != 4) {
-                    throw invalidLine(lineNumber, line);
-                }
-                task = new Deadline(requireLoadedField(fields.get(2), "description", lineNumber),
-                    parseDateTime(fields.get(3), "deadline", lineNumber));
-                break;
-            case "E":
-                if (fields.size() != 5) {
-                    throw invalidLine(lineNumber, line);
-                }
-                task = new Event(requireLoadedField(fields.get(2), "description", lineNumber),
-                    parseDateTime(fields.get(3), "start time", lineNumber),
-                    parseDateTime(fields.get(4), "end time", lineNumber));
-                break;
-            default:
-                throw invalidLine(lineNumber, line);
-        }
+        Task task = switch (fields.get(0)) {
+            case "T" -> deserializeToDo(fields, lineNumber, line);
+            case "D" -> deserializeDeadline(fields, lineNumber, line);
+            case "E" -> deserializeEvent(fields, lineNumber, line);
+            default -> throw invalidLine(lineNumber, line);
+        };
 
         assert task != null : "Every supported save-file record must create a task.";
         if (isDone) {
             task.markAsDone();
         }
         return task;
+    }
+
+    /**
+     * Reconstructs a to-do task from decoded save-file fields.
+     *
+     * @param fields the decoded save-file fields.
+     * @param lineNumber the source line number.
+     * @param line the complete source line.
+     * @return the reconstructed to-do task.
+     */
+    private static Task deserializeToDo(List<String> fields, int lineNumber, String line) {
+        requireFieldCount(fields, 3, lineNumber, line);
+        return new ToDo(requireLoadedField(fields.get(2), "description", lineNumber));
+    }
+
+    /**
+     * Reconstructs a deadline task from decoded save-file fields.
+     *
+     * @param fields the decoded save-file fields.
+     * @param lineNumber the source line number.
+     * @param line the complete source line.
+     * @return the reconstructed deadline task.
+     */
+    private static Task deserializeDeadline(List<String> fields, int lineNumber, String line) {
+        requireFieldCount(fields, 4, lineNumber, line);
+        return new Deadline(requireLoadedField(fields.get(2), "description", lineNumber),
+                parseDateTime(fields.get(3), "deadline", lineNumber));
+    }
+
+    /**
+     * Reconstructs an event task from decoded save-file fields.
+     *
+     * @param fields the decoded save-file fields.
+     * @param lineNumber the source line number.
+     * @param line the complete source line.
+     * @return the reconstructed event task.
+     */
+    private static Task deserializeEvent(List<String> fields, int lineNumber, String line) {
+        requireFieldCount(fields, 5, lineNumber, line);
+        return new Event(requireLoadedField(fields.get(2), "description", lineNumber),
+                parseDateTime(fields.get(3), "start time", lineNumber),
+                parseDateTime(fields.get(4), "end time", lineNumber));
+    }
+
+    /**
+     * Requires a decoded record to contain the expected number of fields.
+     *
+     * @param fields the decoded save-file fields.
+     * @param expectedCount the required field count.
+     * @param lineNumber the source line number.
+     * @param line the complete source line.
+     */
+    private static void requireFieldCount(List<String> fields, int expectedCount,
+            int lineNumber, String line) {
+        if (fields.size() != expectedCount) {
+            throw invalidLine(lineNumber, line);
+        }
     }
 
     /**

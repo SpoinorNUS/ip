@@ -11,7 +11,8 @@ import turtley.exception.TurtleyException;
  */
 public class TaskList {
 
-    private static final int MAX_TASK_NUM = 100;
+    private static final int MAX_TASK_COUNT = 100;
+    private static final String TASK_LIMIT_MESSAGE = "Task list exceeds " + MAX_TASK_COUNT + " tasks.";
     private final List<Task> tasks = new ArrayList<>();
 
     /**
@@ -33,10 +34,10 @@ public class TaskList {
     /**
      * Returns whether this list has reached its supported capacity.
      *
-     * @return {@code true} when the list contains 100 tasks.
+     * @return {@code true} when the list reaches its supported capacity.
      */
     public boolean isFull() {
-        return tasks.size() >= MAX_TASK_NUM;
+        return tasks.size() >= MAX_TASK_COUNT;
     }
 
     /**
@@ -78,7 +79,7 @@ public class TaskList {
             throw new TurtleyException("Cannot add a null task.");
         }
         if (isFull()) {
-            throw new TurtleyException("Task list exceeds 100 tasks.");
+            throw new TurtleyException(TASK_LIMIT_MESSAGE);
         }
         tasks.add(task);
         assertInvariants();
@@ -95,7 +96,7 @@ public class TaskList {
             throw new TurtleyException("Cannot add a null task.");
         }
         if (isFull()) {
-            throw new TurtleyException("Task list exceeds 100 tasks.");
+            throw new TurtleyException(TASK_LIMIT_MESSAGE);
         }
         tasks.add(index, task);
         assertInvariants();
@@ -111,8 +112,8 @@ public class TaskList {
         if (newTasks == null || newTasks.stream().anyMatch(task -> task == null)) {
             throw new TurtleyException("Cannot add null tasks.");
         }
-        if (tasks.size() + newTasks.size() > MAX_TASK_NUM) {
-            throw new TurtleyException("Task list exceeds 100 tasks.");
+        if (tasks.size() + newTasks.size() > MAX_TASK_COUNT) {
+            throw new TurtleyException(TASK_LIMIT_MESSAGE);
         }
         tasks.addAll(newTasks);
         assertInvariants();
