@@ -32,7 +32,12 @@ public abstract class AddCommand extends Command {
         }
 
         Task task = createTask();
+        assert task != null : "An add command must create a task.";
+        int previousTaskCount = tasks.size();
         tasks.add(task);
+        assert tasks.size() == previousTaskCount + 1 : "Adding a task must increase the list size by one.";
+        assert tasks.get(previousTaskCount) == task
+                : "A newly added task must be appended for rollback to remove it correctly.";
         saveOrRollback(tasks, storage, () -> tasks.remove(tasks.size() - 1));
         ui.showTaskAdded(task, tasks.size());
     }

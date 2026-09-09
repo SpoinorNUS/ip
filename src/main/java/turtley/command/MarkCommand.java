@@ -34,6 +34,7 @@ public class MarkCommand extends IndexedCommand {
         Task task = tasks.get(taskIndex);
         boolean wasDone = task.isDone();
         task.markAsDone();
+        assert task.isDone() : "markAsDone() must set the task's completion state.";
         saveOrRollback(tasks, storage, () -> {
             if (!wasDone) {
                 task.markAsNotDone();
