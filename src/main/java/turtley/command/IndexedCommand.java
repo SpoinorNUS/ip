@@ -59,6 +59,8 @@ public abstract class IndexedCommand extends Command {
         if (taskIndex < 0 || taskIndex >= tasks.size()) {
             throw new TurtleyException("Task number is not in your list.");
         }
+        assert taskIndex >= 0 && taskIndex < tasks.size()
+                : "A required task index must refer to an existing task.";
         return taskIndex;
     }
 }

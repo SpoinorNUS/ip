@@ -34,6 +34,7 @@ public class UnmarkCommand extends IndexedCommand {
         Task task = tasks.get(taskIndex);
         boolean wasDone = task.isDone();
         task.markAsNotDone();
+        assert !task.isDone() : "markAsNotDone() must clear the task's completion state.";
         saveOrRollback(tasks, storage, () -> {
             if (wasDone) {
                 task.markAsDone();
