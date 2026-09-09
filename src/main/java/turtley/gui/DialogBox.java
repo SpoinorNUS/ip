@@ -119,6 +119,15 @@ public class DialogBox extends HBox {
             return;
         }
 
+        createAvatarAnimations();
+        createTypingAnimation(text);
+        startVoicePlayback();
+    }
+
+    /**
+     * Creates the bobbing and rotating animations for the avatar.
+     */
+    private void createAvatarAnimations() {
         bobAnimation = new TranslateTransition(Duration.millis(BOB_DURATION_MILLIS), displayPicture);
         bobAnimation.setByY(BOB_DISTANCE);
         bobAnimation.setAutoReverse(true);
@@ -130,7 +139,14 @@ public class DialogBox extends HBox {
         rotationAnimation.setAutoReverse(true);
         rotationAnimation.setCycleCount(Animation.INDEFINITE);
         rotationAnimation.setInterpolator(Interpolator.EASE_BOTH);
+    }
 
+    /**
+     * Creates the timeline that reveals the response text one character at a time.
+     *
+     * @param text the complete dialog text.
+     */
+    private void createTypingAnimation(String text) {
         typingAnimation = new Timeline(new KeyFrame(
                 Duration.millis(TYPING_INTERVAL_MILLIS),
                 event -> {
@@ -139,7 +155,12 @@ public class DialogBox extends HBox {
                 }));
         typingAnimation.setCycleCount(text.length());
         typingAnimation.setOnFinished(event -> stopAnimations());
+    }
 
+    /**
+     * Creates and starts synchronized voice playback when the media is ready.
+     */
+    private void startVoicePlayback() {
         MediaPlayer currentVoicePlayer = loadVoicePlayer();
         voicePlayer = currentVoicePlayer;
         activeVoicePlayer = currentVoicePlayer;

@@ -4,6 +4,7 @@
 import argparse
 import json
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -40,12 +41,15 @@ def java_major_version() -> str:
 
 
 def compile_project(project_root: Path, classes_dir: Path) -> None:
-    source_files = sorted((project_root / "src" / "main" / "java").rglob("*.java"))
-    if not source_files:
-        raise RuntimeError("No Java source files found under src/main/java")
-
+    """Compile all production sources using the project's dependency-aware build."""
+    gradle_wrapper = project_root / ("gradlew.bat" if sys.platform.startswith("win") else "gradlew")
+    gradle_command = (
+        [str(gradle_wrapper)]
+        if sys.platform.startswith("win")
+        else ["bash", str(gradle_wrapper)]
+    )
     result = subprocess.run(
-        ["javac", "-d", str(classes_dir), *(str(path) for path in source_files)],
+        [*gradle_command, "compileJava", "--quiet"],
         cwd=project_root,
         capture_output=True,
         text=True,
@@ -53,6 +57,11 @@ def compile_project(project_root: Path, classes_dir: Path) -> None:
     )
     if result.returncode != 0:
         raise RuntimeError("Compilation failed:\n" + result.stdout + result.stderr)
+
+    compiled_dir = project_root / "build" / "classes" / "java" / "main"
+    if not compiled_dir.is_dir():
+        raise RuntimeError(f"Compilation output directory not found: {compiled_dir}")
+    shutil.copytree(compiled_dir, classes_dir, dirs_exist_ok=True)
 
 
 def validate_case(case: dict, index: int) -> tuple[str, list[str], list[str]]:

@@ -42,6 +42,10 @@ public final class DateTimeParser {
             formatter("uuuu/MM/dd"),
             formatter("dd/MM/uuuu"));
 
+    private static final DateTimeFormatter CANONICAL_DATE_TIME_FORMATTER = formatter("uuuu-MM-dd HH:mm");
+
+    private static final DateTimeFormatter CANONICAL_DATE_FORMATTER = formatter("uuuu-MM-dd");
+
     private DateTimeParser() {
         // Utility class; do not create instances.
     }
@@ -85,10 +89,10 @@ public final class DateTimeParser {
      */
     public static String format(Temporal value) {
         if (value instanceof LocalDateTime dateTime) {
-            return dateTime.format(DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm"));
+            return dateTime.format(CANONICAL_DATE_TIME_FORMATTER);
         }
         if (value instanceof LocalDate date) {
-            return date.format(DateTimeFormatter.ofPattern("uuuu-MM-dd"));
+            return date.format(CANONICAL_DATE_FORMATTER);
         }
         throw new TurtleyException("Unable to format an unsupported date/time value.");
     }
