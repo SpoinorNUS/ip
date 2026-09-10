@@ -29,17 +29,20 @@ public class DeadlineCommand extends AddCommand {
      */
     @Override
     protected Task createTask() {
-        int byIndex = input.indexOf(" /by ");
-        if (byIndex <= 0 || byIndex + 5 >= input.length()) {
+        TagParser.ParsedTags parsedInput = TagParser.parseOptionalModifier(
+                input, "Invalid format. Use: deadline <description> /by <date> [/tag #tag1 #tag2 ...]");
+        String taskInput = parsedInput.content();
+        int byIndex = taskInput.indexOf(" /by ");
+        if (byIndex <= 0 || byIndex + 5 >= taskInput.length()) {
             throw invalidFormat();
         }
 
-        String description = input.substring(0, byIndex).trim();
-        String by = input.substring(byIndex + 5).trim();
+        String description = taskInput.substring(0, byIndex).trim();
+        String by = taskInput.substring(byIndex + 5).trim();
         if (description.isEmpty() || by.isEmpty()) {
             throw invalidFormat();
         }
-        return new Deadline(description, DateTimeParser.parse(by));
+        return new Deadline(description, DateTimeParser.parse(by), parsedInput.tags());
     }
 
     /**
@@ -48,6 +51,7 @@ public class DeadlineCommand extends AddCommand {
      * @return the deadline format error.
      */
     private TurtleyException invalidFormat() {
-        return new TurtleyException("Invalid format. Use: deadline <description> /by <date>");
+        return new TurtleyException(
+                "Invalid format. Use: deadline <description> /by <date> [/tag #tag1 #tag2 ...]");
     }
 }

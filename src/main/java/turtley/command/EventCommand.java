@@ -29,19 +29,23 @@ public class EventCommand extends AddCommand {
      */
     @Override
     protected Task createTask() {
-        int fromIndex = input.indexOf(" /from ");
-        int toIndex = fromIndex < 0 ? -1 : input.indexOf(" /to ", fromIndex + 6);
-        if (fromIndex <= 0 || toIndex <= fromIndex + 6 || toIndex + 5 >= input.length()) {
+        TagParser.ParsedTags parsedInput = TagParser.parseOptionalModifier(
+                input, "Invalid format. Use: event <description> /from <start> /to <end> "
+                        + "[/tag #tag1 #tag2 ...]");
+        String taskInput = parsedInput.content();
+        int fromIndex = taskInput.indexOf(" /from ");
+        int toIndex = fromIndex < 0 ? -1 : taskInput.indexOf(" /to ", fromIndex + 6);
+        if (fromIndex <= 0 || toIndex <= fromIndex + 6 || toIndex + 5 >= taskInput.length()) {
             throw invalidFormat();
         }
 
-        String description = input.substring(0, fromIndex).trim();
-        String from = input.substring(fromIndex + 6, toIndex).trim();
-        String to = input.substring(toIndex + 5).trim();
+        String description = taskInput.substring(0, fromIndex).trim();
+        String from = taskInput.substring(fromIndex + 6, toIndex).trim();
+        String to = taskInput.substring(toIndex + 5).trim();
         if (description.isEmpty() || from.isEmpty() || to.isEmpty()) {
             throw invalidFormat();
         }
-        return new Event(description, DateTimeParser.parse(from), DateTimeParser.parse(to));
+        return new Event(description, DateTimeParser.parse(from), DateTimeParser.parse(to), parsedInput.tags());
     }
 
     /**
@@ -50,6 +54,7 @@ public class EventCommand extends AddCommand {
      * @return the event format error.
      */
     private TurtleyException invalidFormat() {
-        return new TurtleyException("Invalid format. Use: event <description> /from <start> /to <end>");
+        return new TurtleyException("Invalid format. Use: event <description> /from <start> /to <end> "
+                + "[/tag #tag1 #tag2 ...]");
     }
 }

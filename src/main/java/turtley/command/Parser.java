@@ -8,8 +8,12 @@ public class Parser {
     private static final String EXIT_COMMAND = "bye";
     private static final String LIST_COMMAND = "list";
     private static final String FIND_COMMAND = "find";
+    private static final String FILTER_COMMAND = "filter";
+    private static final String HELP_COMMAND = "help";
     private static final String MARK_COMMAND = "mark";
     private static final String UNMARK_COMMAND = "unmark";
+    private static final String TAG_COMMAND = "tag";
+    private static final String UNTAG_COMMAND = "untag";
     private static final String DELETE_COMMAND = "delete";
     private static final String TIMECHECK_COMMAND = "timecheck";
     private static final String TODO_COMMAND = "todo";
@@ -39,11 +43,23 @@ public class Parser {
         if (isCommand(input, FIND_COMMAND)) {
             return new FindCommand(extractArgument(input, FIND_COMMAND));
         }
+        if (isCommand(input, FILTER_COMMAND)) {
+            return new FilterCommand(extractArgument(input, FILTER_COMMAND));
+        }
+        if (input.equals(HELP_COMMAND)) {
+            return new HelpCommand();
+        }
         if (hasArgument(input, MARK_COMMAND)) {
             return new MarkCommand(extractArgument(input, MARK_COMMAND));
         }
         if (hasArgument(input, UNMARK_COMMAND)) {
             return new UnmarkCommand(extractArgument(input, UNMARK_COMMAND));
+        }
+        if (isCommand(input, TAG_COMMAND)) {
+            return new TagCommand(extractArgument(input, TAG_COMMAND));
+        }
+        if (isCommand(input, UNTAG_COMMAND)) {
+            return new UntagCommand(extractArgument(input, UNTAG_COMMAND));
         }
         if (isCommand(input, DELETE_COMMAND)) {
             return new DeleteCommand(extractArgument(input, DELETE_COMMAND));

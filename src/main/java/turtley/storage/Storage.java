@@ -13,6 +13,7 @@ import java.util.List;
 import turtley.exception.TurtleyException;
 import turtley.model.Deadline;
 import turtley.model.Event;
+import turtley.model.TagValidator;
 import turtley.model.Task;
 import turtley.model.TaskType;
 import turtley.model.ToDo;
@@ -216,8 +217,9 @@ public class Storage {
      * @return the reconstructed to-do task.
      */
     private static Task deserializeToDo(List<String> fields, int lineNumber, String line) {
-        requireFieldCount(fields, 3, lineNumber, line);
-        return new ToDo(requireLoadedField(fields.get(2), "description", lineNumber));
+        requireFieldCount(fields, 3, 4, lineNumber, line);
+        return new ToDo(requireLoadedField(fields.get(2), "description", lineNumber),
+                deserializeTags(fields, 3, lineNumber, line));
     }
 
     /**
@@ -229,9 +231,10 @@ public class Storage {
      * @return the reconstructed deadline task.
      */
     private static Task deserializeDeadline(List<String> fields, int lineNumber, String line) {
-        requireFieldCount(fields, 4, lineNumber, line);
+        requireFieldCount(fields, 4, 5, lineNumber, line);
         return new Deadline(requireLoadedField(fields.get(2), "description", lineNumber),
-                parseDateTime(fields.get(3), "deadline", lineNumber));
+                parseDateTime(fields.get(3), "deadline", lineNumber),
+                deserializeTags(fields, 4, lineNumber, line));
     }
 
     /**
@@ -243,10 +246,11 @@ public class Storage {
      * @return the reconstructed event task.
      */
     private static Task deserializeEvent(List<String> fields, int lineNumber, String line) {
-        requireFieldCount(fields, 5, lineNumber, line);
+        requireFieldCount(fields, 5, 6, lineNumber, line);
         return new Event(requireLoadedField(fields.get(2), "description", lineNumber),
                 parseDateTime(fields.get(3), "start time", lineNumber),
-                parseDateTime(fields.get(4), "end time", lineNumber));
+                parseDateTime(fields.get(4), "end time", lineNumber),
+                deserializeTags(fields, 5, lineNumber, line));
     }
 
     /**
@@ -257,11 +261,43 @@ public class Storage {
      * @param lineNumber the source line number.
      * @param line the complete source line.
      */
-    private static void requireFieldCount(List<String> fields, int expectedCount,
+    private static void requireFieldCount(List<String> fields, int legacyCount, int taggedCount,
             int lineNumber, String line) {
-        if (fields.size() != expectedCount) {
+        if (fields.size() != legacyCount && fields.size() != taggedCount) {
             throw invalidLine(lineNumber, line);
         }
+    }
+
+    /**
+     * Reconstructs and validates the optional tags field of a saved task.
+     *
+     * @param fields the decoded save-file fields.
+     * @param tagFieldIndex the index of the optional tags field.
+     * @param lineNumber the source line number.
+     * @param line the complete source line.
+     * @return the loaded tags, or an empty list for a legacy record.
+     */
+    private static List<String> deserializeTags(List<String> fields, int tagFieldIndex,
+            int lineNumber, String line) {
+        if (fields.size() == tagFieldIndex) {
+            return List.of();
+        }
+        String tagField = fields.get(tagFieldIndex);
+        if (tagField.isBlank()) {
+            return List.of();
+        }
+        List<String> tags = List.of(tagField.split("\\s+"));
+        try {
+            TagValidator.validateTags(tags);
+        } catch (TurtleyException exception) {
+            throw new TurtleyException("Invalid task data on line " + lineNumber
+                    + ": tags contain an invalid tag.", exception);
+        }
+        if (tags.size() > TagValidator.MAX_TAG_COUNT) {
+            throw new TurtleyException("Invalid task data on line " + lineNumber
+                    + ": task contains too many tags.");
+        }
+        return tags;
     }
 
     /**
@@ -407,6 +443,7 @@ public class Storage {
                 throw new TurtleyException("Unable to save tasks: task type is invalid.");
         }
 
+        line.append(" | ").append(escape(String.join(" ", task.getTags())));
         return line.toString();
     }
 

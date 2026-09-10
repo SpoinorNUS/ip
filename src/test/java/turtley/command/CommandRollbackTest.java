@@ -1,5 +1,6 @@
 package turtley.command;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -9,6 +10,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -76,6 +78,30 @@ class CommandRollbackTest {
                 () -> new UnmarkCommand("1").execute(tasks, quietUi(), failingStorage()));
 
         assertTrue(task.isDone());
+    }
+
+    @Test
+    void tagCommand_saveFailure_restoresPreviousTags() throws Exception {
+        Task task = new ToDo("task", List.of("#existing"));
+        TaskList tasks = new TaskList();
+        tasks.add(task);
+
+        assertThrows(TurtleyException.class,
+                () -> new TagCommand("1 #new").execute(tasks, quietUi(), failingStorage()));
+
+        assertEquals(List.of("#existing"), task.getTags());
+    }
+
+    @Test
+    void untagCommand_saveFailure_restoresRemovedTags() throws Exception {
+        Task task = new ToDo("task", List.of("#existing"));
+        TaskList tasks = new TaskList();
+        tasks.add(task);
+
+        assertThrows(TurtleyException.class,
+                () -> new UntagCommand("1 #existing").execute(tasks, quietUi(), failingStorage()));
+
+        assertEquals(List.of("#existing"), task.getTags());
     }
 
     private Storage failingStorage() throws Exception {

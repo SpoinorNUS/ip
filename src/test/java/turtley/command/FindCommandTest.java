@@ -2,10 +2,12 @@ package turtley.command;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -50,6 +52,17 @@ class FindCommandTest {
                 + "None! o/T\\>\n"
                 + "____________________________________________________________\n",
                 output.toString().replace(System.lineSeparator(), "\n"));
+    }
+
+    @Test
+    void execute_tagKeyword_displaysTaskMatchingTag() {
+        TaskList tasks = new TaskList();
+        tasks.add(new ToDo("read book", List.of("#personal")));
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+
+        new FindCommand("#PER").execute(tasks, new Ui(new PrintStream(output)), quietStorage());
+
+        assertTrue(output.toString().contains("1.[T][ ] read book [#personal]"));
     }
 
     @Test

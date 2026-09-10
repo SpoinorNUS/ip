@@ -26,6 +26,8 @@ public class TodoCommand extends AddCommand {
      */
     @Override
     protected Task createTask() {
-        return new ToDo(description);
+        TagParser.ParsedTags parsedInput = TagParser.parseOptionalModifier(
+                description, "Invalid format. Use: todo <description> [/tag #tag1 #tag2 ...]");
+        return new ToDo(parsedInput.content(), parsedInput.tags());
     }
 }

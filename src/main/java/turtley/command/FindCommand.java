@@ -43,7 +43,11 @@ public class FindCommand extends Command {
         ui.showFindHeader();
         for (int i = 0; i < tasks.size(); i++) {
             Task task = tasks.get(i);
-            if (task.getDescription().toLowerCase(Locale.ROOT).contains(normalizedKeyword)) {
+            boolean matchesDescription = task.getDescription().toLowerCase(Locale.ROOT).contains(normalizedKeyword);
+            boolean matchesTag = task.getTags().stream()
+                    .map(tag -> tag.toLowerCase(Locale.ROOT))
+                    .anyMatch(tag -> tag.contains(normalizedKeyword));
+            if (matchesDescription || matchesTag) {
                 hasMatchingTask = true;
                 ui.showTask(i, task);
             }
