@@ -34,10 +34,10 @@ class StorageTest {
     void saveThenLoad_allTaskTypesAndEscapedFields_roundTrip() {
         Path dataFile = temporaryDirectory.resolve("nested/tasks.txt");
         Storage storage = new Storage(dataFile.toString());
-        ToDo todo = new ToDo("buy | milk\\bread\nsoon");
-        Deadline deadline = new Deadline("submit report", LocalDate.of(2026, 8, 27));
+        ToDo todo = new ToDo("buy | milk\\bread\nsoon", List.of("#home", "#Fun"));
+        Deadline deadline = new Deadline("submit report", LocalDate.of(2026, 8, 27), List.of("#work"));
         Event event = new Event("team meeting", LocalDateTime.of(2026, 8, 27, 14, 5),
-                LocalDateTime.of(2026, 8, 27, 15, 5));
+                LocalDateTime.of(2026, 8, 27, 15, 5), List.of("#meeting"));
         event.markAsDone();
 
         storage.save(List.of(todo, deadline, event));
@@ -50,9 +50,12 @@ class StorageTest {
                 () -> assertTrue(Files.exists(dataFile)),
                 () -> assertEquals(3, loaded.size()),
                 () -> assertEquals(todo.getDescription(), loadedTodo.getDescription()),
+                () -> assertEquals(todo.getTags(), loadedTodo.getTags()),
                 () -> assertFalse(loadedTodo.isDone()),
+                () -> assertEquals(deadline.getTags(), loadedDeadline.getTags()),
                 () -> assertEquals(deadline.getBy(), loadedDeadline.getBy()),
                 () -> assertFalse(loadedDeadline.isDone()),
+                () -> assertEquals(event.getTags(), loadedEvent.getTags()),
                 () -> assertEquals(event.getFrom(), loadedEvent.getFrom()),
                 () -> assertEquals(event.getTo(), loadedEvent.getTo()),
                 () -> assertTrue(loadedEvent.isDone()));
@@ -86,6 +89,32 @@ class StorageTest {
 
         assertEquals(1, loaded.size());
         assertEquals("keep this", loaded.get(0).getDescription());
+    }
+
+    @Test
+    void load_legacyRecords_returnsTasksWithoutTags() throws IOException {
+        Path dataFile = temporaryDirectory.resolve("tasks.txt");
+        Files.writeString(dataFile, "T | 0 | keep this\n"
+                + "D | 1 | submit report | 2026-08-27\n"
+                + "E | 0 | meeting | 2026-08-27 14:00 | 2026-08-27 15:00\n");
+
+        List<Task> loaded = new Storage(dataFile.toString()).load();
+
+        assertEquals(List.of(), loaded.get(0).getTags());
+        assertEquals(List.of(), loaded.get(1).getTags());
+        assertEquals(List.of(), loaded.get(2).getTags());
+    }
+
+    @Test
+    void load_invalidTag_reportsLineContext() throws IOException {
+        Path dataFile = temporaryDirectory.resolve("tasks.txt");
+        Files.writeString(dataFile, "T | 0 | invalid tag | fun\n");
+
+        TurtleyException exception = assertThrows(TurtleyException.class,
+                () -> new Storage(dataFile.toString()).load());
+
+        assertTrue(exception.getMessage().contains("line 1"));
+        assertTrue(exception.getMessage().contains("tags contain an invalid tag"));
     }
 
     @Test

@@ -1,13 +1,25 @@
 package turtley.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.NavigableSet;
+import java.util.TreeSet;
+
+import turtley.exception.TurtleyException;
+
 /**
  * Represents a general task in Turtley's task list.
  */
 public class Task {
 
+    private static final Comparator<String> TAG_COMPARATOR = String.CASE_INSENSITIVE_ORDER
+            .thenComparing(Comparator.naturalOrder());
     protected String description;
     protected boolean isDone;
     private final TaskType taskType;
+    private final NavigableSet<String> tags;
 
     /**
      * Creates an unfinished task with the given description.
@@ -15,7 +27,7 @@ public class Task {
      * @param description the task description.
      */
     public Task(String description) {
-        this(TaskType.TODO, description);
+        this(TaskType.TODO, description, List.of());
     }
 
     /**
@@ -25,9 +37,22 @@ public class Task {
      * @param description the task description.
      */
     public Task(TaskType taskType, String description) {
+        this(taskType, description, List.of());
+    }
+
+    /**
+     * Creates a task with a caller-supplied type and tags.
+     *
+     * @param taskType the task type.
+     * @param description the task description.
+     * @param tags the task tags.
+     */
+    public Task(TaskType taskType, String description, Collection<String> tags) {
         this.taskType = taskType;
         this.description = description;
         this.isDone = false;
+        this.tags = new TreeSet<>(TAG_COMPARATOR);
+        addTags(tags);
     }
 
     /**
@@ -94,12 +119,74 @@ public class Task {
     }
 
     /**
+     * Returns this task's tags in display order.
+     *
+     * @return an immutable list of tags.
+     */
+    public List<String> getTags() {
+        return List.copyOf(tags);
+    }
+
+    /**
+     * Adds valid tags to this task, ignoring duplicate tags.
+     *
+     * @param newTags the tags to add.
+     * @return the tags that were newly added.
+     */
+    public List<String> addTags(Collection<String> newTags) {
+        TagValidator.validateTags(newTags);
+        List<String> addedTags = new ArrayList<>();
+        for (String tag : newTags) {
+            if (!tags.contains(tag)) {
+                addedTags.add(tag);
+            }
+        }
+        if (tags.size() + addedTags.size() > TagValidator.MAX_TAG_COUNT) {
+            throw new TurtleyException("A task can have at most 10 tags.");
+        }
+        tags.addAll(addedTags);
+        return addedTags;
+    }
+
+    /**
+     * Removes tags from this task, ignoring tags that are not present.
+     *
+     * @param tagsToRemove the tags to remove.
+     * @return the tags that were removed.
+     */
+    public List<String> removeTags(Collection<String> tagsToRemove) {
+        TagValidator.validateTags(tagsToRemove);
+        List<String> removedTags = new ArrayList<>();
+        for (String tag : tagsToRemove) {
+            if (tags.remove(tag)) {
+                removedTags.add(tag);
+            }
+        }
+        return removedTags;
+    }
+
+    /**
+     * Returns the description followed by the formatted tags.
+     *
+     * @return the description with tags, if any.
+     */
+    public String getDescriptionWithTags() {
+        if (tags.isEmpty()) {
+            return description;
+        }
+        return description + " " + tags.stream()
+                .map(tag -> "[" + tag + "]")
+                .reduce((first, second) -> first + " " + second)
+                .orElse("");
+    }
+
+    /**
      * Returns the display form of this task.
      *
      * @return the type icon, status icon, and description.
      */
     @Override
     public String toString() {
-        return "[" + getTypeIcon() + "][" + getStatusIcon() + "] " + description;
+        return "[" + getTypeIcon() + "][" + getStatusIcon() + "] " + getDescriptionWithTags();
     }
 }

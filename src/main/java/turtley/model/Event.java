@@ -1,6 +1,7 @@
 package turtley.model;
 
 import java.time.temporal.Temporal;
+import java.util.Collection;
 
 import turtley.util.DateTimeParser;
 
@@ -26,6 +27,20 @@ public class Event extends Task {
     }
 
     /**
+     * Creates an unfinished event with tags.
+     *
+     * @param description the event description.
+     * @param from the parsed event start date or date-time.
+     * @param to the parsed event end date or date-time.
+     * @param tags the event tags.
+     */
+    public Event(String description, Temporal from, Temporal to, Collection<String> tags) {
+        super(TaskType.EVENT, description, tags);
+        this.from = from;
+        this.to = to;
+    }
+
+    /**
      * Creates an unfinished event from user-entered date/time text.
      *
      * @param description the event description.
@@ -34,6 +49,18 @@ public class Event extends Task {
      */
     public Event(String description, String from, String to) {
         this(description, DateTimeParser.parse(from), DateTimeParser.parse(to));
+    }
+
+    /**
+     * Creates an unfinished event from user-entered date/time text with tags.
+     *
+     * @param description the event description.
+     * @param from the event start text.
+     * @param to the event end text.
+     * @param tags the event tags.
+     */
+    public Event(String description, String from, String to, Collection<String> tags) {
+        this(description, DateTimeParser.parse(from), DateTimeParser.parse(to), tags);
     }
 
     /**

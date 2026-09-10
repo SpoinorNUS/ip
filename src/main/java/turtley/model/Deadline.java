@@ -1,6 +1,7 @@
 package turtley.model;
 
 import java.time.temporal.Temporal;
+import java.util.Collection;
 
 import turtley.util.DateTimeParser;
 
@@ -23,6 +24,18 @@ public class Deadline extends Task {
     }
 
     /**
+     * Creates an unfinished deadline with tags.
+     *
+     * @param description the task description.
+     * @param by the parsed deadline date or date-time.
+     * @param tags the task tags.
+     */
+    public Deadline(String description, Temporal by, Collection<String> tags) {
+        super(TaskType.DEADLINE, description, tags);
+        this.by = by;
+    }
+
+    /**
      * Creates an unfinished deadline from user-entered date text.
      *
      * @param description the task description.
@@ -30,6 +43,17 @@ public class Deadline extends Task {
      */
     public Deadline(String description, String by) {
         this(description, DateTimeParser.parse(by));
+    }
+
+    /**
+     * Creates an unfinished deadline from user-entered date text with tags.
+     *
+     * @param description the task description.
+     * @param by the deadline text.
+     * @param tags the task tags.
+     */
+    public Deadline(String description, String by, Collection<String> tags) {
+        this(description, DateTimeParser.parse(by), tags);
     }
 
     /**

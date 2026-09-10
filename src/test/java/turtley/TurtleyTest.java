@@ -30,6 +30,20 @@ class TurtleyTest {
     }
 
     @Test
+    void getResponse_taggedTask_supportsTaggingAndFiltering() {
+        Turtley turtley = createTurtley();
+
+        assertEquals(String.join(System.lineSeparator(),
+                "Got it. I've added this task:",
+                "  [T][ ] go jogging [#fun] [#health]",
+                "Now you have 1 tasks in the list."), turtley.getResponse(
+                "todo go jogging /tag #health #fun"));
+        assertTrue(turtley.getResponse("find FUN").contains("[#fun]"));
+        assertTrue(turtley.getResponse("filter #HE").contains("[#health]"));
+        assertTrue(turtley.getResponse("list").contains("1.[T][ ] go jogging [#fun] [#health]"));
+    }
+
+    @Test
     void getResponse_list_returnsTasksWithoutConsoleSeparators() {
         Turtley turtley = createTurtley();
         turtley.getResponse("todo read book");
