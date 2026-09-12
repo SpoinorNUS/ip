@@ -93,9 +93,9 @@ class TaskListTest {
         assertEquals(1, tasks.asList().size());
     }
 
-    private static void assertAllBasicState(TaskList tasks, int size, boolean empty) {
+    private static void assertAllBasicState(TaskList tasks, int size, boolean isEmpty) {
         assertEquals(size, tasks.size());
-        assertEquals(empty, tasks.isEmpty());
+        assertEquals(isEmpty, tasks.isEmpty());
         assertFalse(tasks.isFull());
     }
 

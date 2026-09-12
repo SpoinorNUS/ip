@@ -309,20 +309,20 @@ public class Storage {
     private static List<String> splitFields(String line) {
         List<String> fields = new ArrayList<>();
         StringBuilder field = new StringBuilder();
-        boolean escaping = false;
+        boolean isEscaping = false;
 
         for (int i = 0; i < line.length(); i++) {
             char character = line.charAt(i);
-            if (escaping) {
+            if (isEscaping) {
                 switch (character) {
                     case '\\', '|' -> field.append(character);
                     case 'n' -> field.append('\n');
                     case 'r' -> field.append('\r');
                     default -> field.append('\\').append(character);
                 }
-                escaping = false;
+                isEscaping = false;
             } else if (character == '\\') {
-                escaping = true;
+                isEscaping = true;
             } else if (character == '|') {
                 fields.add(field.toString().trim());
                 field.setLength(0);
@@ -331,7 +331,7 @@ public class Storage {
             }
         }
 
-        if (escaping) {
+        if (isEscaping) {
             field.append('\\');
         }
         fields.add(field.toString().trim());

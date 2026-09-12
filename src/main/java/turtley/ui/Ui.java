@@ -21,7 +21,7 @@ public class Ui {
             + "   |_/ |_/     \\_| \\_|\n Turtley";
 
     private final PrintStream output;
-    private final boolean showSeparators;
+    private final boolean shouldShowSeparators;
 
     /**
      * Creates a UI that writes to standard output.
@@ -43,11 +43,11 @@ public class Ui {
      * Creates a UI that writes to the supplied output stream, optionally including separators.
      *
      * @param output the stream used for user-facing output.
-     * @param showSeparators whether standard separator lines should be printed.
+     * @param shouldShowSeparators whether standard separator lines should be printed.
      */
-    public Ui(PrintStream output, boolean showSeparators) {
+    public Ui(PrintStream output, boolean shouldShowSeparators) {
         this.output = Objects.requireNonNull(output);
-        this.showSeparators = showSeparators;
+        this.shouldShowSeparators = shouldShowSeparators;
     }
 
     /**
@@ -292,7 +292,7 @@ public class Ui {
      * Displays the standard separator line.
      */
     public void showSeparator() {
-        if (showSeparators) {
+        if (shouldShowSeparators) {
             output.println(SEPARATOR);
         }
     }
