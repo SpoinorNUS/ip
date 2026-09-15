@@ -232,9 +232,48 @@ For date and time values, append a 24-hour time using either `HH:mm` or
 `HHmm`. For example, `2026-09-18 18:00` and `18/09/2026 1800` are valid.
 A `T` may also separate the date and time, such as `2026-09-18T18:00`.
 
+## Saving the data
+Turtley automatically saves data after every command. You do not need to save manually.
+
 ## Tag rules
 
 - Every tag must start with `#` and contain 1 to 10 non-whitespace characters.
 - Each task can have at most 10 tags.
 - Tags are displayed alphabetically.
 - Tags are case-sensitive when stored, but searches are case-insensitive.
+
+## Editing the data file
+AddressBook data is saved automatically in a txt file `[JAR file location]/data/turtley.txt`.
+Advanced users are welcome to update data directly by editing that data file.
+Caution: Invalid entries may cause the entire txt file to be rejected, so it is
+recommended to back up the file before you choose to edit it.
+
+## FAQ
+Q: How do I transfer my data to another computer?
+A: Install the app on the other computer and overwrite the data file it creates
+with the data file from your previous Turtley home folder.
+
+## Known issues
+*The talking sound effect sometimes not play* when Turtley is speaking. In order to not stall Turtley's
+response timing for advanced users, the text display does not wait for the audio player before starting.
+Therefore, the sound effect may lag or even not play entirely, depending on the current state of your computer.
+This is unfortunately intended design to accommodate fast typing.
+
+## Command summary
+
+| Command | Format | Description |
+| --- | --- | --- |
+| `todo` | `todo <description> [/tag #tag1 #tag2 ...]` | Adds a task without a deadline or scheduled time. |
+| `deadline` | `deadline <description> /by <date> [/tag #tag1 #tag2 ...]` | Adds a task with a deadline. |
+| `event` | `event <description> /from <start> /to <end> [/tag #tag1 #tag2 ...]` | Adds an event with a start and end time. |
+| `tag` | `tag <task number> #tag1 [#tag2 ...]` | Adds tags to an existing task. |
+| `untag` | `untag <task number> #tag1 [#tag2 ...]` | Removes tags from an existing task. |
+| `filter` | `filter #tag-substring` | Shows tasks with tags matching a substring. |
+| `list` | `list` | Displays all tasks and their task numbers. |
+| `find` | `find <keyword>` | Searches task descriptions and tags for a keyword. |
+| `mark` | `mark <task number>` | Marks a task as completed. |
+| `unmark` | `unmark <task number>` | Marks a completed task as not completed. |
+| `delete` | `delete <task number>` | Permanently deletes a task. |
+| `timecheck` | `timecheck <date/time>` | Shows deadlines and event starts on or before a date/time. |
+| `help` | `help` | Displays the command list and tag rules. |
+| `bye` | `bye` | Saves the data and exits Turtley. |
