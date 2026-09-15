@@ -34,6 +34,9 @@ public class Main extends Application {
             }
             scene.getStylesheets().add(stylesheet.toExternalForm());
             stage.setTitle("Turtley");
+            stage.setMinWidth(420.0);
+            stage.setMinHeight(320.0);
+            stage.setResizable(true);
             stage.setScene(scene);
             stage.show();
             fxmlLoader.<MainWindow>getController().setTurtley(turtley);

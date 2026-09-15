@@ -39,7 +39,7 @@ public class MainWindow extends AnchorPane {
     private final Image backgroundImage = loadImage("/images/Background.png");
 
     /**
-     * Binds the conversation scroll position and applies the window background.
+     * Binds the conversation scroll position for the responsive conversation area.
      */
     @FXML
     public void initialize() {
@@ -72,10 +72,13 @@ public class MainWindow extends AnchorPane {
     @FXML
     private void handleUserInput() {
         String input = userInput.getText();
-        String response = turtley.getResponse(input);
+        Turtley.Response response = turtley.getResponseDetails(input);
+        DialogBox responseDialog = response.isError()
+                ? DialogBox.getTurtleyErrorDialog(response.text(), turtleyImage)
+                : DialogBox.getTurtleyDialog(response.text(), turtleyImage);
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input, userImage),
-                DialogBox.getTurtleyDialog(response, turtleyImage)
+                responseDialog
         );
         userInput.clear();
     }

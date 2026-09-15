@@ -10,6 +10,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.RotateTransition;
 import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -20,6 +21,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Font;
@@ -34,6 +36,9 @@ public class DialogBox extends HBox {
     private static final double BOB_DISTANCE = 6.0;
     private static final double BOB_DURATION_MILLIS = 300.0;
     private static final double ROTATION_ANGLE = 12.0;
+    private static final double MAX_BUBBLE_WIDTH = 700.0;
+    private static final double MIN_BUBBLE_WIDTH = 180.0;
+    private static final double BUBBLE_HORIZONTAL_SPACE = 88.0;
     private static final String VOICE_RESOURCE = "/images/TurtleyVoice.mp4";
 
     private static Media voiceMedia;
@@ -63,6 +68,7 @@ public class DialogBox extends HBox {
 
         dialog.setText(text);
         displayPicture.setImage(image);
+        bindResponsiveBubbleWidth();
     }
 
     /**
@@ -73,7 +79,9 @@ public class DialogBox extends HBox {
      * @return the user dialog row.
      */
     public static DialogBox getUserDialog(String text, Image image) {
-        return new DialogBox(text, image);
+        DialogBox dialogBox = new DialogBox(text, image);
+        dialogBox.getStyleClass().add("user-dialog");
+        return dialogBox;
     }
 
     /**
@@ -86,7 +94,21 @@ public class DialogBox extends HBox {
     public static DialogBox getTurtleyDialog(String text, Image image) {
         DialogBox dialogBox = new DialogBox("", image);
         dialogBox.flip();
+        dialogBox.getStyleClass().add("turtley-dialog");
         dialogBox.startTyping(text);
+        return dialogBox;
+    }
+
+    /**
+     * Creates an animated Turtley error row with attention-grabbing error styling.
+     *
+     * @param text the error response.
+     * @param image the Turtley avatar.
+     * @return the animated, styled Turtley error row.
+     */
+    public static DialogBox getTurtleyErrorDialog(String text, Image image) {
+        DialogBox dialogBox = getTurtleyDialog(text, image);
+        dialogBox.getStyleClass().add("error-dialog");
         return dialogBox;
     }
 
@@ -99,13 +121,25 @@ public class DialogBox extends HBox {
      */
     public static DialogBox getTurtleyWelcomeDialog(String text, Image image) {
         DialogBox dialogBox = getTurtleyDialog(text, image);
+        dialogBox.getStyleClass().add("welcome-dialog");
         dialogBox.dialog.setFont(Font.font("Monospaced"));
         dialogBox.dialog.setWrapText(false);
         return dialogBox;
     }
 
     /**
-     * Starts revealing the dialog text and animating the avatar one character at a time.
+     * Keeps the message bubble within the space available beside its avatar.
+     */
+    private void bindResponsiveBubbleWidth() {
+        dialog.maxWidthProperty().bind(Bindings.createDoubleBinding(() -> Math.min(
+                        MAX_BUBBLE_WIDTH,
+                        Math.max(MIN_BUBBLE_WIDTH, getWidth() - BUBBLE_HORIZONTAL_SPACE)),
+                widthProperty()));
+        HBox.setHgrow(dialog, Priority.NEVER);
+    }
+
+    /**
+     * Starts revealing the dialog text immediately and loads optional voice playback.
      *
      * @param text the complete dialog text.
      */
@@ -121,6 +155,7 @@ public class DialogBox extends HBox {
 
         createAvatarAnimations();
         createTypingAnimation(text);
+        typingAnimation.play();
         startVoicePlayback();
     }
 
@@ -173,7 +208,7 @@ public class DialogBox extends HBox {
     }
 
     /**
-     * Starts the media, typing, and avatar animations at the same time.
+     * Starts the media and avatar animations once the voice resource is ready.
      *
      * @param player the media player that has finished loading.
      */
@@ -186,7 +221,6 @@ public class DialogBox extends HBox {
         player.play();
         bobAnimation.play();
         rotationAnimation.play();
-        typingAnimation.play();
     }
 
     /**
