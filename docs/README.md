@@ -48,7 +48,7 @@ Note that below also shows how Turtley reacts to commands.<br/>
 5. When the Turtley window appears, type a command in the command box and press
    **Enter**. Try `help` first to view all available commands.
 6. Use `list` to view your tasks. Refer to the Basic commands and Advanced
-   commands sections below for details. Type `bye` to exit Turtley.
+   commands sections below for details. Press the 'x' on the top right of the window to exit Turtley.
 7. Refer to the command sections below for details of each command.
 
 ## Basic commands
@@ -160,6 +160,7 @@ help
 ### `bye`
 
 Saves the task list and exits Turtley.
+(**Currently doesn't work in the latest version**, for now it is just easter egg dialog)
 
 ```text
 bye
@@ -300,6 +301,9 @@ with the data file from your previous Turtley home folder.
 response timing for advanced users, the text display does not wait for the audio player before starting.
 Therefore, the sound effect may lag or even not play entirely, depending on the current state of your computer.
 This is unfortunately intended design to accommodate fast typing.
+
+**Bye command currently does nothing**, this is due to the transition from CLI to GUI design,
+the bye command can potentially be changed to close the window as well in the future.
 
 ## Command summary
 
