@@ -3,6 +3,7 @@ package turtley.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import turtley.exception.TurtleyException;
 
@@ -81,6 +82,7 @@ public class TaskList {
         if (isFull()) {
             throw new TurtleyException(TASK_LIMIT_MESSAGE);
         }
+        ensureNotDuplicate(task);
         tasks.add(task);
         assertInvariants();
     }
@@ -98,6 +100,7 @@ public class TaskList {
         if (isFull()) {
             throw new TurtleyException(TASK_LIMIT_MESSAGE);
         }
+        ensureNotDuplicate(task);
         tasks.add(index, task);
         assertInvariants();
     }
@@ -115,8 +118,41 @@ public class TaskList {
         if (tasks.size() + newTasks.size() > MAX_TASK_COUNT) {
             throw new TurtleyException(TASK_LIMIT_MESSAGE);
         }
+        List<Task> combinedTasks = new ArrayList<>(tasks);
+        for (Task task : newTasks) {
+            ensureNotDuplicate(task, combinedTasks);
+            combinedTasks.add(task);
+        }
         tasks.addAll(newTasks);
         assertInvariants();
+    }
+
+    private void ensureNotDuplicate(Task task) {
+        ensureNotDuplicate(task, tasks);
+    }
+
+    private static void ensureNotDuplicate(Task task, List<Task> existingTasks) {
+        if (existingTasks.stream().anyMatch(existingTask -> hasSameDetails(existingTask, task))) {
+            throw new TurtleyException("Cannot add a duplicate task.");
+        }
+    }
+
+    private static boolean hasSameDetails(Task first, Task second) {
+        if (first.getTaskType() != second.getTaskType()
+                || !Objects.equals(first.getDescription(), second.getDescription())
+                || !Objects.equals(first.getTags(), second.getTags())) {
+            return false;
+        }
+        if (first instanceof Deadline && second instanceof Deadline) {
+            return Objects.equals(((Deadline) first).getBy(), ((Deadline) second).getBy());
+        }
+        if (first instanceof Event && second instanceof Event) {
+            Event firstEvent = (Event) first;
+            Event secondEvent = (Event) second;
+            return Objects.equals(firstEvent.getFrom(), secondEvent.getFrom())
+                    && Objects.equals(firstEvent.getTo(), secondEvent.getTo());
+        }
+        return true;
     }
 
     /**

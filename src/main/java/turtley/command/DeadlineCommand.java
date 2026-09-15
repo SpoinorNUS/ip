@@ -32,6 +32,9 @@ public class DeadlineCommand extends AddCommand {
         TagParser.ParsedTags parsedInput = TagParser.parseOptionalModifier(
                 input, "Invalid format. Use: deadline <description> /by <date> [/tag #tag1 #tag2 ...]");
         String taskInput = parsedInput.content();
+        if (TagParser.countModifier(taskInput, "/by") != 1) {
+            throw invalidFormat();
+        }
         int byIndex = taskInput.indexOf(" /by ");
         if (byIndex <= 0 || byIndex + 5 >= taskInput.length()) {
             throw invalidFormat();

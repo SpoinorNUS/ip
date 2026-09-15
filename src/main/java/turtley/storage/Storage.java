@@ -4,9 +4,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +17,7 @@ import turtley.model.Deadline;
 import turtley.model.Event;
 import turtley.model.TagValidator;
 import turtley.model.Task;
+import turtley.model.TaskList;
 import turtley.model.TaskType;
 import turtley.model.ToDo;
 import turtley.util.DateTimeParser;
@@ -39,8 +42,12 @@ public class Storage {
         if (filePath == null || filePath.isBlank()) {
             throw new TurtleyException("Unable to use an empty save-file path.");
         }
-        dataFile = Path.of(filePath);
-        tempDataFile = Path.of(filePath + ".tmp");
+        try {
+            dataFile = Path.of(filePath);
+            tempDataFile = Path.of(filePath + ".tmp");
+        } catch (InvalidPathException | SecurityException exception) {
+            throw new TurtleyException("Unable to use save-file path.", exception);
+        }
     }
 
     /**
@@ -173,6 +180,11 @@ public class Storage {
                     tasks.add(deserialize(line, lineNumber));
                 }
             }
+            try {
+                new TaskList(tasks);
+            } catch (TurtleyException exception) {
+                throw new TurtleyException("Unable to load tasks from disk: duplicate task data.", exception);
+            }
             return tasks;
         } catch (IOException | SecurityException exception) {
             throw new TurtleyException("Unable to load tasks from disk.", exception);
@@ -188,7 +200,13 @@ public class Storage {
      * @throws TurtleyException if the line does not match the save format.
      */
     private static Task deserialize(String line, int lineNumber) {
-        List<String> fields = splitFields(line);
+        List<String> fields;
+        try {
+            fields = splitFields(line);
+        } catch (TurtleyException exception) {
+            throw new TurtleyException("Invalid task data on line " + lineNumber
+                    + ": malformed escape sequence.", exception);
+        }
         if (fields.size() < 3) {
             throw invalidLine(lineNumber, line);
         }
@@ -247,10 +265,16 @@ public class Storage {
      */
     private static Task deserializeEvent(List<String> fields, int lineNumber, String line) {
         requireFieldCount(fields, 5, 6, lineNumber, line);
-        return new Event(requireLoadedField(fields.get(2), "description", lineNumber),
-                parseDateTime(fields.get(3), "start time", lineNumber),
-                parseDateTime(fields.get(4), "end time", lineNumber),
-                deserializeTags(fields, 5, lineNumber, line));
+        String description = requireLoadedField(fields.get(2), "description", lineNumber);
+        Temporal from = parseDateTime(fields.get(3), "start time", lineNumber);
+        Temporal to = parseDateTime(fields.get(4), "end time", lineNumber);
+        List<String> tags = deserializeTags(fields, 5, lineNumber, line);
+        try {
+            return new Event(description, from, to, tags);
+        } catch (TurtleyException exception) {
+            throw new TurtleyException("Invalid task data on line " + lineNumber
+                    + ": event start time must be before end time.", exception);
+        }
     }
 
     /**
@@ -318,7 +342,7 @@ public class Storage {
                     case '\\', '|' -> field.append(character);
                     case 'n' -> field.append('\n');
                     case 'r' -> field.append('\r');
-                    default -> field.append('\\').append(character);
+                    default -> throw new TurtleyException("Malformed escape sequence.");
                 }
                 isEscaping = false;
             } else if (character == '\\') {
@@ -332,7 +356,7 @@ public class Storage {
         }
 
         if (isEscaping) {
-            field.append('\\');
+            throw new TurtleyException("Malformed escape sequence.");
         }
         fields.add(field.toString().trim());
         return fields;

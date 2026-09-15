@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -71,6 +72,36 @@ class TaskListTest {
         assertEquals(1, tasks.size());
         assertEquals("existing", tasks.get(0).getDescription());
         assertEquals(99, nearlyFull.size());
+    }
+
+    @Test
+    void add_duplicateTaskDetails_throwsWithoutMutation() {
+        TaskList tasks = new TaskList(List.of(new ToDo("same task")));
+
+        TurtleyException exception = assertThrows(TurtleyException.class,
+                () -> tasks.add(new ToDo("same task")));
+
+        assertEquals("Cannot add a duplicate task.", exception.getMessage());
+        assertEquals(1, tasks.size());
+    }
+
+    @Test
+    void addAll_duplicateTaskDetails_throwsAtomically() {
+        TaskList tasks = new TaskList();
+
+        assertThrows(TurtleyException.class,
+                () -> tasks.addAll(List.of(new ToDo("same task"), new ToDo("same task"))));
+
+        assertTrue(tasks.isEmpty());
+    }
+
+    @Test
+    void event_startNotBeforeEnd_throwsTurtleyException() {
+        TurtleyException exception = assertThrows(TurtleyException.class,
+                () -> new Event("meeting", LocalDateTime.of(2026, 8, 27, 10, 0),
+                        LocalDateTime.of(2026, 8, 27, 10, 0)));
+
+        assertEquals("Event start time must be before end time.", exception.getMessage());
     }
 
     @Test

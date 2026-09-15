@@ -3,6 +3,7 @@ package turtley.model;
 import java.time.temporal.Temporal;
 import java.util.Collection;
 
+import turtley.exception.TurtleyException;
 import turtley.util.DateTimeParser;
 
 /**
@@ -20,6 +21,9 @@ public class Deadline extends Task {
      */
     public Deadline(String description, Temporal by) {
         super(TaskType.DEADLINE, description);
+        if (by == null) {
+            throw new TurtleyException("Deadline date/time cannot be null.");
+        }
         this.by = by;
     }
 
@@ -32,6 +36,9 @@ public class Deadline extends Task {
      */
     public Deadline(String description, Temporal by, Collection<String> tags) {
         super(TaskType.DEADLINE, description, tags);
+        if (by == null) {
+            throw new TurtleyException("Deadline date/time cannot be null.");
+        }
         this.by = by;
     }
 

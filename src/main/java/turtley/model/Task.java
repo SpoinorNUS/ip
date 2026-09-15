@@ -48,6 +48,12 @@ public class Task {
      * @param tags the task tags.
      */
     public Task(TaskType taskType, String description, Collection<String> tags) {
+        if (taskType == null) {
+            throw new TurtleyException("Task type cannot be null.");
+        }
+        if (description == null || description.isBlank()) {
+            throw new TurtleyException("Task description cannot be blank.");
+        }
         this.taskType = taskType;
         this.description = description;
         this.isDone = false;

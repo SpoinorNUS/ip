@@ -62,6 +62,37 @@ final class TagParser {
     }
 
     /**
+     * Counts occurrences of a modifier as a complete whitespace-delimited token.
+     *
+     * @param input the command argument.
+     * @param modifier the modifier to count.
+     * @return the number of complete modifier tokens.
+     */
+    static int countModifier(String input, String modifier) {
+        if (input == null || modifier == null || modifier.isEmpty()) {
+            return 0;
+        }
+        int count = 0;
+        int searchStart = 0;
+        while (searchStart < input.length()) {
+            int candidateIndex = input.indexOf(modifier, searchStart);
+            if (candidateIndex < 0) {
+                break;
+            }
+            int modifierEnd = candidateIndex + modifier.length();
+            boolean startsToken = candidateIndex == 0
+                    || Character.isWhitespace(input.charAt(candidateIndex - 1));
+            boolean endsToken = modifierEnd == input.length()
+                    || Character.isWhitespace(input.charAt(modifierEnd));
+            if (startsToken && endsToken) {
+                count++;
+            }
+            searchStart = modifierEnd;
+        }
+        return count;
+    }
+
+    /**
      * Parses the task number and tags in a tag mutation command.
      *
      * @param input the command argument.

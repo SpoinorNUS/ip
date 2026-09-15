@@ -34,6 +34,9 @@ public class Parser {
         if (input == null || input.isEmpty()) {
             return new EmptyCommand();
         }
+        if (hasInvalidWhitespace(input)) {
+            return new UnknownCommand();
+        }
         if (input.equals(EXIT_COMMAND)) {
             return new ExitCommand();
         }
@@ -77,6 +80,19 @@ public class Parser {
             return new EventCommand(extractArgument(input, EVENT_COMMAND));
         }
         return new UnknownCommand();
+    }
+
+    /**
+     * Detects whitespace that makes command token boundaries ambiguous.
+     *
+     * @param input the raw user input.
+     * @return {@code true} if the input has outer, repeated, or non-space whitespace.
+     */
+    private static boolean hasInvalidWhitespace(String input) {
+        return !input.equals(input.strip())
+                || input.contains("  ")
+                || input.codePoints().anyMatch(character -> Character.isWhitespace(character)
+                        && character != ' ');
     }
 
     /**

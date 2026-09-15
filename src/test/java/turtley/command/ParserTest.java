@@ -48,4 +48,13 @@ class ParserTest {
                 () -> assertInstanceOf(UnknownCommand.class, Parser.parse(" ")),
                 () -> assertInstanceOf(UnknownCommand.class, Parser.parse("mark")));
     }
+
+    @Test
+    void parse_invalidWhitespace_returnsUnknownCommand() {
+        assertAll(
+                () -> assertInstanceOf(UnknownCommand.class, Parser.parse(" todo read book")),
+                () -> assertInstanceOf(UnknownCommand.class, Parser.parse("todo read book ")),
+                () -> assertInstanceOf(UnknownCommand.class, Parser.parse("todo read  book")),
+                () -> assertInstanceOf(UnknownCommand.class, Parser.parse("todo\tread book")));
+    }
 }

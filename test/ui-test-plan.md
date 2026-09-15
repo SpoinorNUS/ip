@@ -241,6 +241,30 @@ The executable expected-output list is kept below so the `test-ui` skill can run
         "Commands:\ntodo <description> [/tag #tag1 #tag2 ...]\ndeadline <description> /by <date> [/tag #tag1 #tag2 ...]\nevent <description> /from <start> /to <end> [/tag #tag1 #tag2 ...]\ntag <task number> #tag1 [#tag2 ...]\nuntag <task number> #tag1 [#tag2 ...]\nfilter #tag-substring\nlist\nfind <keyword>\nmark <task number>\nunmark <task number>\ndelete <task number>\ntimecheck <date/time>\nhelp\nbye\n\nTags must start with # and contain 1-10 non-whitespace characters.\nEach task can have at most 10 tags.\nTags are case-sensitive, displayed alphabetically, and searched case-insensitively.",
         "Bye. See you around!"
       ]
+    },
+    {
+      "name": "Error-handling edge cases",
+      "aim": "Verify that duplicate tasks, repeated modifiers, invalid event ranges, and malformed whitespace are rejected without corrupting the session.",
+      "inputs": [
+        "todo duplicate",
+        "todo duplicate",
+        "deadline duplicate /by 2026-08-27 /by 2026-08-28",
+        "event invalid range /from 2026-08-27 10:00 /to 2026-08-27 10:00",
+        "todo  duplicate",
+        " todo spaced",
+        "delete 4",
+        "bye"
+      ],
+      "expected_outputs": [
+        "Got it. I've added this task:\n  [T][ ] duplicate\nNow you have 4 tasks in the list.",
+        "Cannot add a duplicate task. o/T\\>",
+        "Invalid format. Use: deadline <description> /by <date> [/tag #tag1 #tag2 ...] o/T\\>",
+        "Event start time must be before end time. o/T\\>",
+        "Please input something correct. o/T\\>",
+        "Please input something correct. o/T\\>",
+        "Noted. I've removed this task:\n   [T][ ] duplicate\n Now you have 3 tasks in the list.",
+        "Bye. See you around!"
+      ]
     }
   ]
 }
@@ -441,3 +465,22 @@ Invalid date/time format. Use yyyy-MM-dd, dd-MM-yyyy, yyyy/MM/dd, dd/MM/yyyy, yy
    [T][ ] borrow book
  Now you have 0 tasks in the list.
 ```
+
+## Test case 7: Error-handling edge cases
+
+Aim: Verify that duplicate tasks, repeated modifiers, invalid event ranges, and malformed whitespace are rejected without corrupting the session.
+
+Inputs:
+
+```text
+todo duplicate
+todo duplicate
+deadline duplicate /by 2026-08-27 /by 2026-08-28
+event invalid range /from 2026-08-27 10:00 /to 2026-08-27 10:00
+todo  duplicate
+ todo spaced
+delete 4
+bye
+```
+
+Expected output: The first task is added; each invalid input produces an error while leaving the task list usable.

@@ -3,6 +3,7 @@ package turtley.model;
 import java.time.temporal.Temporal;
 import java.util.Collection;
 
+import turtley.exception.TurtleyException;
 import turtley.util.DateTimeParser;
 
 /**
@@ -22,6 +23,7 @@ public class Event extends Task {
      */
     public Event(String description, Temporal from, Temporal to) {
         super(TaskType.EVENT, description);
+        validateTimeRange(from, to);
         this.from = from;
         this.to = to;
     }
@@ -36,6 +38,7 @@ public class Event extends Task {
      */
     public Event(String description, Temporal from, Temporal to, Collection<String> tags) {
         super(TaskType.EVENT, description, tags);
+        validateTimeRange(from, to);
         this.from = from;
         this.to = to;
     }
@@ -79,6 +82,15 @@ public class Event extends Task {
      */
     public Temporal getTo() {
         return to;
+    }
+
+    private static void validateTimeRange(Temporal from, Temporal to) {
+        if (from == null || to == null) {
+            throw new TurtleyException("Event start and end date/time values cannot be null.");
+        }
+        if (!DateTimeParser.isBefore(from, to)) {
+            throw new TurtleyException("Event start time must be before end time.");
+        }
     }
 
     /**

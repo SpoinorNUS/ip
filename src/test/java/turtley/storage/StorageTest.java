@@ -143,6 +143,41 @@ class StorageTest {
     }
 
     @Test
+    void load_invalidEventRange_reportsLineContext() throws IOException {
+        Path dataFile = temporaryDirectory.resolve("tasks.txt");
+        Files.writeString(dataFile, "E | 0 | meeting | 2026-08-27 10:00 | 2026-08-27 10:00\n");
+
+        TurtleyException exception = assertThrows(TurtleyException.class,
+                () -> new Storage(dataFile.toString()).load());
+
+        assertTrue(exception.getMessage().contains("line 1"));
+        assertTrue(exception.getMessage().contains("event start time must be before end time"));
+    }
+
+    @Test
+    void load_duplicateTaskRecords_throwsTurtleyException() throws IOException {
+        Path dataFile = temporaryDirectory.resolve("tasks.txt");
+        Files.writeString(dataFile, "T | 0 | repeated\nT | 1 | repeated\n");
+
+        TurtleyException exception = assertThrows(TurtleyException.class,
+                () -> new Storage(dataFile.toString()).load());
+
+        assertEquals("Unable to load tasks from disk: duplicate task data.", exception.getMessage());
+    }
+
+    @Test
+    void load_malformedEscape_throwsTurtleyException() throws IOException {
+        Path dataFile = temporaryDirectory.resolve("tasks.txt");
+        Files.writeString(dataFile, "T | 0 | malformed\\q\n");
+
+        TurtleyException exception = assertThrows(TurtleyException.class,
+                () -> new Storage(dataFile.toString()).load());
+
+        assertTrue(exception.getMessage().contains("line 1"));
+        assertTrue(exception.getMessage().contains("malformed escape sequence"));
+    }
+
+    @Test
     void load_directoryPath_throwsTurtleyException() {
         Path directory = temporaryDirectory.resolve("directory");
         assertTrue(directory.toFile().mkdir());
@@ -176,5 +211,6 @@ class StorageTest {
     void constructor_blankPath_throwsTurtleyException() {
         assertThrows(TurtleyException.class, () -> new Storage(null));
         assertThrows(TurtleyException.class, () -> new Storage("  "));
+        assertThrows(TurtleyException.class, () -> new Storage("bad\u0000path"));
     }
 }

@@ -33,6 +33,10 @@ public class EventCommand extends AddCommand {
                 input, "Invalid format. Use: event <description> /from <start> /to <end> "
                         + "[/tag #tag1 #tag2 ...]");
         String taskInput = parsedInput.content();
+        if (TagParser.countModifier(taskInput, "/from") != 1
+                || TagParser.countModifier(taskInput, "/to") != 1) {
+            throw invalidFormat();
+        }
         int fromIndex = taskInput.indexOf(" /from ");
         int toIndex = fromIndex < 0 ? -1 : taskInput.indexOf(" /to ", fromIndex + 6);
         if (fromIndex <= 0 || toIndex <= fromIndex + 6 || toIndex + 5 >= taskInput.length()) {
