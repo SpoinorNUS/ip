@@ -1,64 +1,240 @@
 # Turtley User Guide
 
-Turtley supports to-do, deadline, and event tasks. Tags can be attached to any
-task and are shown at the end of the task.
+Turtley is a command-line task manager for organising to-do items, deadlines,
+events, and tags.
 
-## Adding tasks with tags
+## Getting started
 
-Tags are optional and must be supplied using the trailing /tag modifier.
-Each tag starts with '#', contains 1-10 non-whitespace characters, and a task
-can have at most 10 tags.
+Start Turtley and enter one command at a time at the prompt. Press **Enter**
+after each command. Use `list` to see the current task numbers, then use `bye`
+when you are finished.
 
-```
-todo go jogging /tag #fun #health
-deadline submit report /by 2026-12-31 /tag #work
-event team dinner /from 2026-09-20 19:00 /to 2026-09-20 21:00 /tag #social
-```
+## Basic commands
 
-The tags are extracted from the description and displayed alphabetically:
+### `todo`
 
-```
-[T][ ] go jogging [#fun] [#health]
+Adds a task without a deadline or scheduled time.
+
+```text
+todo <description>
 ```
 
-Tags are case-sensitive, so `#Fun` and `#fun` are different tags. Duplicate
-tags are ignored.
+Example:
 
-## Tagging existing tasks
-
+```text
+todo Prepare presentation slides
 ```
+
+### `deadline`
+
+Adds a task that should be completed by a particular date or date and time.
+
+```text
+deadline <description> /by <date>
+```
+
+Example:
+
+```text
+deadline Submit project report /by 2026-09-18 18:00
+```
+
+### `event`
+
+Adds an event with a start and end date or date and time.
+
+```text
+event <description> /from <start> /to <end>
+```
+
+Example:
+
+```text
+event Product photography session /from 2026-09-19 10:00 /to 2026-09-19 12:00
+```
+
+The event start must be earlier than its end.
+
+### `list`
+
+Displays all tasks and their one-based task numbers. Use these numbers with
+commands such as `mark`, `tag`, and `delete`.
+
+```text
+list
+```
+
+### `mark`
+
+Marks a task as completed.
+
+```text
+mark <task number>
+```
+
+Example:
+
+```text
+mark 2
+```
+
+### `unmark`
+
+Marks a completed task as not completed.
+
+```text
+unmark <task number>
+```
+
+Example:
+
+```text
+unmark 2
+```
+
+### `delete`
+
+Deletes a task permanently. Run `list` again afterwards because the remaining
+task numbers may change.
+
+```text
+delete <task number>
+```
+
+Example:
+
+```text
+delete 3
+```
+
+### `help`
+
+Displays the complete command list and tag rules inside Turtley.
+
+```text
+help
+```
+
+### `bye`
+
+Saves the task list and exits Turtley.
+
+```text
+bye
+```
+
+## Advanced commands
+
+### Adding tags with `/tag`
+
+Tags can be added when creating a task. Put `/tag` at the end of the command,
+followed by one or more tags.
+
+```text
+todo <description> /tag #tag1 #tag2
+deadline <description> /by <date> /tag #tag1 #tag2
+event <description> /from <start> /to <end> /tag #tag1 #tag2
+```
+
+Examples:
+
+```text
+todo Prepare presentation slides /tag #school #priority
+deadline Submit project report /by 2026-09-18 18:00 /tag #school #urgent
+event Product photography session /from 2026-09-19 10:00 /to 2026-09-19 12:00 /tag #personal #photo
+```
+
+### `tag`
+
+Adds one or more tags to an existing task.
+
+```text
 tag <task number> #tag1 [#tag2 ...]
+```
+
+Example:
+
+```text
+tag 1 #important #school
+```
+
+### `untag`
+
+Removes one or more tags from an existing task.
+
+```text
 untag <task number> #tag1 [#tag2 ...]
 ```
 
-For example:
+Example:
 
-```
-tag 1 #fun #weekend
-untag 1 #weekend
-```
-
-Tagging is allowed for completed tasks. Removing a tag that is not present is
-ignored. Invalid commands do not modify the task.
-
-## Searching and filtering
-
-'find' searches both descriptions and tags using case-insensitive substring
-matching:
-
-```
-find fun
+```text
+untag 1 #school
 ```
 
-'filter' searches tags only. The filter query must start with '#' and uses
-case-insensitive substring matching:
+### `find`
 
+Searches for a keyword in both task descriptions and tags. The search is
+case-insensitive and can match part of a word.
+
+```text
+find <keyword>
 ```
-filter #fun
+
+Example:
+
+```text
+find project
 ```
 
-This matches tags such as '#fun' and '#funny'.
+### `filter`
 
-## Help
+Shows tasks with a tag containing the supplied substring. The filter must begin
+with `#`; tag matching is case-insensitive.
 
-Use 'help' to display the complete command reference and tagging rules.
+```text
+filter #tag-substring
+```
+
+Example:
+
+```text
+filter #school
+```
+
+### `timecheck`
+
+Shows deadlines due on or before a specified date/time and events that start on
+or before that date/time. To include every task on a date, provide a date
+without a time.
+
+```text
+timecheck <date/time>
+```
+
+Examples:
+
+```text
+timecheck 2026-09-20
+timecheck 2026-09-20 17:00
+```
+
+## Date and time format
+
+Turtley accepts these date formats:
+
+- `yyyy-MM-dd`, such as `2026-09-18`
+- `dd-MM-yyyy`, such as `18-09-2026`
+- `yyyy/MM/dd`, such as `2026/09/18`
+- `dd/MM/yyyy`, such as `18/09/2026`
+
+For date and time values, append a 24-hour time using either `HH:mm` or
+`HHmm`. For example, `2026-09-18 18:00` and `18/09/2026 1800` are valid.
+A `T` may also separate the date and time, such as `2026-09-18T18:00`.
+
+## Tag rules
+
+- Every tag must start with `#` and contain 1 to 10 non-whitespace characters.
+- Each task can have at most 10 tags.
+- Tags are displayed alphabetically.
+- Tags are case-sensitive when stored, but searches are case-insensitive.
