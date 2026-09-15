@@ -3,11 +3,53 @@
 Turtley is a command-line task manager for organising to-do items, deadlines,
 events, and tags.
 
-## Getting started
+## Table of contents
 
-Start Turtley and enter one command at a time at the prompt. Press **Enter**
-after each command. Use `list` to see the current task numbers, then use `bye`
-when you are finished.
+- [Quick start](#quick-start)
+- [Basic commands](#basic-commands)
+  - [`todo`](#todo)
+  - [`deadline`](#deadline)
+  - [`event`](#event)
+  - [`list`](#list)
+  - [`mark`](#mark)
+  - [`unmark`](#unmark)
+  - [`delete`](#delete)
+  - [`help`](#help)
+  - [`bye`](#bye)
+- [Advanced commands](#advanced-commands)
+  - [Adding tags with `/tag`](#adding-tags-with-tag)
+  - [`tag`](#tag)
+  - [`untag`](#untag)
+  - [`find`](#find)
+  - [`filter`](#filter)
+  - [`timecheck`](#timecheck)
+- [Date and time format](#date-and-time-format)
+- [Saving the data](#saving-the-data)
+- [Tag rules](#tag-rules)
+- [Editing the data file](#editing-the-data-file)
+- [FAQ](#faq)
+- [Known issues](#known-issues)
+- [Command summary](#command-summary)
+
+## Quick start
+
+Turtley can be run from the Java source project or from the packaged `Turtley.jar`
+file.
+
+### Running `Turtley.jar`
+
+1. Install Java 25 or later.
+2. Download the latest .jar file from [here](https://github.com/SpoinorNUS/ip/releases)
+3. Place `Turtley.jar` in the folder you want to use as Turtley's home folder.
+4. Open a terminal, cd to the folder containing the JAR file, and run java -jar addressbook.jar.
+   A GUI similar to the one below should appear in a few seconds.
+Note that below also shows how Turtley reacts to commands.<br/>
+![Screenshot of Turtley being used to mark and list out tasks in a list](https://spoinornus.github.io/ip/Ui.png)
+5. When the Turtley window appears, type a command in the command box and press
+   **Enter**. Try `help` first to view all available commands.
+6. Use `list` to view your tasks. Refer to the Basic commands and Advanced
+   commands sections below for details. Type `bye` to exit Turtley.
+7. Refer to the command sections below for details of each command.
 
 ## Basic commands
 
@@ -249,12 +291,12 @@ Caution: Invalid entries may cause the entire txt file to be rejected, so it is
 recommended to back up the file before you choose to edit it.
 
 ## FAQ
-Q: How do I transfer my data to another computer?
-A: Install the app on the other computer and overwrite the data file it creates
+**Q**: How do I transfer my data to another computer?<br/>
+**A**: Install the app on the other computer and overwrite the data file it creates
 with the data file from your previous Turtley home folder.
 
 ## Known issues
-*The talking sound effect sometimes not play* when Turtley is speaking. In order to not stall Turtley's
+**The talking sound effect sometimes not play** when Turtley is speaking. In order to not stall Turtley's
 response timing for advanced users, the text display does not wait for the audio player before starting.
 Therefore, the sound effect may lag or even not play entirely, depending on the current state of your computer.
 This is unfortunately intended design to accommodate fast typing.
