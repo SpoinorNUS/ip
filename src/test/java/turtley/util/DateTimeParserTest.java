@@ -151,6 +151,19 @@ class DateTimeParserTest {
         assertTrue(exception.getMessage().contains("unsupported date/time value"));
     }
 
+    @Test
+    void isBefore_requiresStrictlyEarlierValue() {
+        LocalDateTime value = LocalDateTime.of(2026, 8, 27, 10, 0);
+
+        assertAll(
+                () -> assertTrue(DateTimeParser.isBefore(value,
+                        LocalDateTime.of(2026, 8, 27, 10, 1))),
+                () -> assertFalse(DateTimeParser.isBefore(value, value)),
+                () -> assertFalse(DateTimeParser.isBefore(value,
+                        LocalDateTime.of(2026, 8, 27, 9, 59))),
+                () -> assertFalse(DateTimeParser.isBefore(null, value)));
+    }
+
     /**
      * Asserts that an input is rejected with the parser's documented error message.
      *

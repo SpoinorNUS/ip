@@ -123,6 +123,21 @@ public final class DateTimeParser {
     }
 
     /**
+     * Checks whether the first date/time occurs strictly before the second date/time.
+     * Date-only values are treated as occurring at the start of their day.
+     *
+     * @param value the first date/time value.
+     * @param other the second date/time value.
+     * @return {@code true} if {@code value} occurs before {@code other}.
+     */
+    public static boolean isBefore(Temporal value, Temporal other) {
+        if (value == null || other == null) {
+            return false;
+        }
+        return toLocalDateTime(value).isBefore(toLocalDateTime(other));
+    }
+
+    /**
      * Extracts the calendar date from either supported Java time type.
      *
      * @param value a date or date-time value.
@@ -134,6 +149,16 @@ public final class DateTimeParser {
         }
         if (value instanceof LocalDateTime dateTime) {
             return dateTime.toLocalDate();
+        }
+        throw new TurtleyException("Unable to compare an unsupported date/time value.");
+    }
+
+    private static LocalDateTime toLocalDateTime(Temporal value) {
+        if (value instanceof LocalDateTime dateTime) {
+            return dateTime;
+        }
+        if (value instanceof LocalDate date) {
+            return date.atStartOfDay();
         }
         throw new TurtleyException("Unable to compare an unsupported date/time value.");
     }

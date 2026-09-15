@@ -1,5 +1,6 @@
 package turtley.command;
 
+import turtley.exception.TurtleyException;
 import turtley.model.Task;
 import turtley.model.ToDo;
 
@@ -28,6 +29,9 @@ public class TodoCommand extends AddCommand {
     protected Task createTask() {
         TagParser.ParsedTags parsedInput = TagParser.parseOptionalModifier(
                 description, "Invalid format. Use: todo <description> [/tag #tag1 #tag2 ...]");
+        if (parsedInput.content().isBlank()) {
+            throw new TurtleyException("Invalid format. Use: todo <description> [/tag #tag1 #tag2 ...]");
+        }
         return new ToDo(parsedInput.content(), parsedInput.tags());
     }
 }
