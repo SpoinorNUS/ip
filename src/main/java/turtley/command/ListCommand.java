@@ -10,6 +10,12 @@ import turtley.ui.Ui;
 public class ListCommand extends Command {
 
     /**
+     * Creates a list command.
+     */
+    public ListCommand() {
+    }
+
+    /**
      * Displays the current task list.
      *
      * @param tasks the application's task list.

@@ -238,6 +238,10 @@ public class DialogBox extends HBox {
      * Stops the avatar and voice animations and restores the avatar's original transform.
      */
     private void stopAnimations() {
+        if (typingAnimation != null) {
+            typingAnimation.stop();
+            typingAnimation = null;
+        }
         if (bobAnimation != null) {
             bobAnimation.stop();
             displayPicture.setTranslateY(0.0);

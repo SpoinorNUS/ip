@@ -20,6 +20,7 @@ public class Event extends Task {
      * @param description the event description.
      * @param from the parsed event start date or date-time.
      * @param to the parsed event end date or date-time.
+     * @throws TurtleyException if a time value is null or the start is not before the end.
      */
     public Event(String description, Temporal from, Temporal to) {
         super(TaskType.EVENT, description);
@@ -35,6 +36,7 @@ public class Event extends Task {
      * @param from the parsed event start date or date-time.
      * @param to the parsed event end date or date-time.
      * @param tags the event tags.
+     * @throws TurtleyException if a time value is null, the start is not before the end, or the tags are invalid.
      */
     public Event(String description, Temporal from, Temporal to, Collection<String> tags) {
         super(TaskType.EVENT, description, tags);

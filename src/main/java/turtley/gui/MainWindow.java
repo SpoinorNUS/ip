@@ -39,6 +39,12 @@ public class MainWindow extends AnchorPane {
     private final Image backgroundImage = loadImage("/images/Background.png");
 
     /**
+     * Creates the main conversation window.
+     */
+    public MainWindow() {
+    }
+
+    /**
      * Binds the conversation scroll position for the responsive conversation area.
      */
     @FXML

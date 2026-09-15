@@ -10,6 +10,12 @@ import turtley.ui.Ui;
 public class UnknownCommand extends Command {
 
     /**
+     * Creates an unknown command.
+     */
+    public UnknownCommand() {
+    }
+
+    /**
      * Displays the response for an unrecognized command.
      *
      * @param tasks the application's task list, which is not modified.

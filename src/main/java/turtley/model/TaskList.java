@@ -73,7 +73,7 @@ public class TaskList {
      * Adds a task to the end of the list.
      *
      * @param task the task to add.
-     * @throws TurtleyException if the list is full or the task is null.
+     * @throws TurtleyException if the list is full, the task is null, or its details are duplicated.
      */
     public void add(Task task) {
         if (task == null) {
@@ -92,6 +92,7 @@ public class TaskList {
      *
      * @param index the insertion index.
      * @param task the task to insert.
+     * @throws TurtleyException if the list is full, the task is null, or its details are duplicated.
      */
     public void add(int index, Task task) {
         if (task == null) {
@@ -109,7 +110,7 @@ public class TaskList {
      * Adds all supplied tasks to the end of the list.
      *
      * @param newTasks the tasks to add.
-     * @throws TurtleyException if the tasks are null, contain null, or exceed capacity.
+     * @throws TurtleyException if the tasks are null, contain null or duplicate details, or exceed capacity.
      */
     public void addAll(List<Task> newTasks) {
         if (newTasks == null || newTasks.stream().anyMatch(task -> task == null)) {

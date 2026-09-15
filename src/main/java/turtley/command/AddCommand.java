@@ -11,6 +11,12 @@ import turtley.ui.Ui;
 public abstract class AddCommand extends Command {
 
     /**
+     * Creates an add command.
+     */
+    protected AddCommand() {
+    }
+
+    /**
      * Creates the task represented by this command.
      *
      * @return the new task.

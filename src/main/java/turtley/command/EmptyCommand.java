@@ -10,6 +10,12 @@ import turtley.ui.Ui;
 public class EmptyCommand extends Command {
 
     /**
+     * Creates an empty command.
+     */
+    public EmptyCommand() {
+    }
+
+    /**
      * Displays the response for an empty command.
      *
      * @param tasks the application's task list, which is not modified.

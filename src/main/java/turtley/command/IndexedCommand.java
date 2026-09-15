@@ -9,6 +9,12 @@ import turtley.model.TaskList;
 public abstract class IndexedCommand extends Command {
 
     /**
+     * Creates a command that addresses a task by index.
+     */
+    protected IndexedCommand() {
+    }
+
+    /**
      * Parses a one-based task number into a zero-based index.
      *
      * @param input the task number entered by the user.

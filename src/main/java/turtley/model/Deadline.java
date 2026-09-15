@@ -18,6 +18,7 @@ public class Deadline extends Task {
      *
      * @param description the task description.
      * @param by the parsed deadline date or date-time.
+     * @throws TurtleyException if the description is blank or {@code by} is null.
      */
     public Deadline(String description, Temporal by) {
         super(TaskType.DEADLINE, description);
@@ -33,6 +34,7 @@ public class Deadline extends Task {
      * @param description the task description.
      * @param by the parsed deadline date or date-time.
      * @param tags the task tags.
+     * @throws TurtleyException if the description is blank, {@code by} is null, or the tags are invalid.
      */
     public Deadline(String description, Temporal by, Collection<String> tags) {
         super(TaskType.DEADLINE, description, tags);

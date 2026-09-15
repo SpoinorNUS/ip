@@ -8,6 +8,12 @@ import javafx.application.Application;
 public class Launcher {
 
     /**
+     * Creates a launcher.
+     */
+    public Launcher() {
+    }
+
+    /**
      * Launches the JavaFX runtime.
      *
      * @param args command-line arguments, which are passed to JavaFX.

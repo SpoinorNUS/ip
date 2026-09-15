@@ -16,7 +16,9 @@ public class Task {
 
     private static final Comparator<String> TAG_COMPARATOR = String.CASE_INSENSITIVE_ORDER
             .thenComparing(Comparator.naturalOrder());
+    /** The user-facing task description. */
     protected String description;
+    /** Whether the task has been marked as completed. */
     protected boolean isDone;
     private final TaskType taskType;
     private final NavigableSet<String> tags;
@@ -46,6 +48,7 @@ public class Task {
      * @param taskType the task type.
      * @param description the task description.
      * @param tags the task tags.
+     * @throws TurtleyException if the task type is null or the description is blank.
      */
     public Task(TaskType taskType, String description, Collection<String> tags) {
         if (taskType == null) {

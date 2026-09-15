@@ -18,6 +18,12 @@ public class Main extends Application {
     private final Turtley turtley = new Turtley();
 
     /**
+     * Creates the JavaFX application.
+     */
+    public Main() {
+    }
+
+    /**
      * Loads and displays the main Turtley window.
      *
      * @param stage the primary application stage.

@@ -10,6 +10,12 @@ import turtley.ui.Ui;
 public class HelpCommand extends Command {
 
     /**
+     * Creates a help command.
+     */
+    public HelpCommand() {
+    }
+
+    /**
      * Displays the command reference.
      *
      * @param tasks the application's task list, which is not modified.

@@ -28,7 +28,7 @@ public class Parser {
      * Parses one line of user input.
      *
      * @param input the raw user input.
-     * @return the executable command represented by the input.
+     * @return the executable command represented by the input, or an unknown command for malformed input.
      */
     public static Command parse(String input) {
         if (input == null || input.isEmpty()) {

@@ -10,6 +10,12 @@ import turtley.ui.Ui;
 public class ExitCommand extends Command {
 
     /**
+     * Creates an exit command.
+     */
+    public ExitCommand() {
+    }
+
+    /**
      * Displays the normal shutdown message.
      *
      * @param tasks the application's task list, which is not modified.
