@@ -65,6 +65,25 @@ class TurtleyTest {
     }
 
     @Test
+    void getResponseDetails_invalidCommand_marksResponseAsError() {
+        Turtley turtley = createTurtley();
+
+        Turtley.Response response = turtley.getResponseDetails("unknown command");
+
+        assertTrue(response.isError());
+        assertEquals("Please input something correct. o/T" + (char) 92 + ">", response.text());
+    }
+
+    @Test
+    void getResponseDetails_validCommand_doesNotMarkResponseAsError() {
+        Turtley turtley = createTurtley();
+
+        Turtley.Response response = turtley.getResponseDetails("help");
+
+        assertTrue(!response.isError());
+    }
+
+    @Test
     void getResponse_exit_returnsGoodbyeMessage() {
         Turtley turtley = createTurtley();
 

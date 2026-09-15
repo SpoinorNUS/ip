@@ -22,6 +22,7 @@ public class Ui {
 
     private final PrintStream output;
     private final boolean shouldShowSeparators;
+    private boolean hasError;
 
     /**
      * Creates a UI that writes to standard output.
@@ -89,6 +90,7 @@ public class Ui {
      * @param exception the user-facing error.
      */
     public void showError(TurtleyException exception) {
+        hasError = true;
         showSeparator();
         output.println(" " + exception.getMessage() + " o/T\\>");
         showSeparator();
@@ -98,6 +100,7 @@ public class Ui {
      * Displays the message used when the task list is full.
      */
     public void showTaskListFull() {
+        hasError = true;
         showSeparator();
         output.println("Task list full, do some work you lazy bum! o/T\\>");
         showSeparator();
@@ -276,6 +279,7 @@ public class Ui {
      * Displays the response for an empty input line.
      */
     public void showEmptyInput() {
+        hasError = true;
         output.println("Please input something. o/T\\>");
         showSeparator();
     }
@@ -284,6 +288,7 @@ public class Ui {
      * Displays the response for an unrecognized command.
      */
     public void showUnknownCommand() {
+        hasError = true;
         output.println("Please input something correct. o/T\\>");
         showSeparator();
     }
@@ -295,5 +300,14 @@ public class Ui {
         if (shouldShowSeparators) {
             output.println(SEPARATOR);
         }
+    }
+
+    /**
+     * Returns whether this UI has displayed an error during its response.
+     *
+     * @return whether an error was displayed.
+     */
+    public boolean hasError() {
+        return hasError;
     }
 }
